@@ -1,4 +1,4 @@
-package model;
+package com.example.pizzumburgum.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
