@@ -1,37 +1,38 @@
-package com.example.pizzumburgum.entities;
+package com.example.pizzumburgum.components;
 
-import com.example.pizzumburgum.model.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.List;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "usuarios")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Usuario extends BaseEntity {
+@Table(name = "usuario")
+public class Usuario {
 
-    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idUsuario;
+
+    @Column(nullable = false, length = 50)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String apellido;
 
-    @Column(name = "fecha_nac")
-    private String fecha_nac;
-
-    @Column
-    private String documento;
-
-    @Column
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column
-    private String password;
+    @Column(nullable = false, length = 100)
+    private String hashPassword;
 
-    @Column
+    @Column(nullable = false, unique = true, length = 20)
+    private String documento;
+
+    @Column(name = "fecha_nac", nullable = false)
+    private java.time.LocalDate fechaNacimiento;
+
+    @Column(length = 15)
     private String celular;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Direccion> direcciones;
-
 }
