@@ -2,14 +2,19 @@ package com.example.pizzumburgum.components;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
+import java.time.LocalDate;
+
+@Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA necesita ctor por defecto
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@SuperBuilder(toBuilder = true) // << usar SuperBuilder, NO Builder
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo", length = 20)
+public abstract class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +36,7 @@ public class Usuario {
     private String documento;
 
     @Column(name = "fecha_nac", nullable = false)
-    private java.time.LocalDate fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     @Column(length = 15)
     private String celular;

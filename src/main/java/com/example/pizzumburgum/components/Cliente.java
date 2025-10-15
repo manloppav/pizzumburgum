@@ -2,24 +2,24 @@ package com.example.pizzumburgum.components;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder // << heredado desde Usuario
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity
-@Table(name = "cliente")
-@PrimaryKeyJoinColumn(name = "id_usuario")  // usa el mismo PK que Usuario
+@DiscriminatorValue("CLIENTE") // << SINGLE_TABLE: discrimina acá
 public class Cliente extends Usuario {
 
-    // Cliente "tiene_registrado" muchos medios de pago (1 a N)
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MedioPago> mediosDePago = new HashSet<>();
 
-    // Cliente "crea" muchas creaciones (1 a N)
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Creacion> creaciones = new HashSet<>();
 }
