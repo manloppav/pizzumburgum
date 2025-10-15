@@ -1,17 +1,23 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.producto;
 
+import com.example.pizzumburgum.actores.Funcionario;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
-@Entity @Table(name = "atributo",
-        uniqueConstraints = @UniqueConstraint(name="uk_atributo_nombre", columnNames = "nombre"))
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "atributo",
+        uniqueConstraints = @UniqueConstraint(name="UK_atributo_nombre", columnNames = "nombre")) //la columna nombre no puede repetirse(atributo único)
 public class Atributo {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idAtributo;
 
     @Column(nullable = false, length = 100)

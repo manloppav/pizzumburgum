@@ -1,5 +1,6 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.producto;
 
+import com.example.pizzumburgum.actores.Funcionario;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,10 +23,10 @@ public class Caracteristica {
     @JoinColumn(name = "atributo_id", nullable = false)
     private Atributo atributo;
 
-    /** 1:N con Opcion */
+    /** 1:N con Seleccion */
     @OneToMany(mappedBy = "caracteristica", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<Opcion> opciones = new LinkedHashSet<>();
+    private Set<Seleccion> selecciones = new LinkedHashSet<>();
 
     /** N:1 – Funcionario que AGREGÓ la característica */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.producto;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,10 +29,5 @@ public class Seleccion {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "caracteristica_id", nullable = false)
     private Caracteristica caracteristica;
-
-    /** N:1 con Opcion (reemplaza a Caracteristica en tu versión anterior) */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "opcion_id", nullable = false)
-    private Opcion opcion;
 }
 

@@ -1,5 +1,7 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.actores;
 
+import com.example.pizzumburgum.producto.Creacion;
+import com.example.pizzumburgum.pedido_carrito_pago.MedioPago;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

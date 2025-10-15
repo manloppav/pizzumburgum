@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.producto;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,7 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.relaciones_atributosCompuestos;
 
 
+import com.example.pizzumburgum.actores.Usuario;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

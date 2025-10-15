@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.pedido_carrito_pago;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

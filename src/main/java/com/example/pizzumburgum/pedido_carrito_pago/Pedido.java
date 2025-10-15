@@ -1,5 +1,7 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.pedido_carrito_pago;
 
+import com.example.pizzumburgum.actores.Cliente;
+import com.example.pizzumburgum.relaciones_atributosCompuestos.Direccion;
 import jakarta.persistence.*;
 import lombok.*;
 

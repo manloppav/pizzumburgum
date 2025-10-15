@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.actores;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,14 +6,13 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
-@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA necesita ctor por defecto
 @AllArgsConstructor
-@SuperBuilder(toBuilder = true) // << usar SuperBuilder, NO Builder
+@SuperBuilder(toBuilder = true) // << usar SuperBuilder, NO Builder (xq es super clase)
 @Entity
 @Table(name = "usuario")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo", length = 20)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) //(todas las clases hijas en una unica tabla)
+@DiscriminatorColumn(name = "tipo", length = 20) // la columna tipo indica de que subclase se trata
 public abstract class Usuario {
 
     @Id

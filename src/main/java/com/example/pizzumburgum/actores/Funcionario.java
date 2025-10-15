@@ -1,5 +1,7 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.actores;
 
+import com.example.pizzumburgum.producto.Atributo;
+import com.example.pizzumburgum.producto.Caracteristica;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

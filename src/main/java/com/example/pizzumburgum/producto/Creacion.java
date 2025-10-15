@@ -1,5 +1,7 @@
-package com.example.pizzumburgum.components;
+package com.example.pizzumburgum.producto;
 
+import com.example.pizzumburgum.actores.Cliente;
+import com.example.pizzumburgum.pedido_carrito_pago.DetalleCarrito;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
