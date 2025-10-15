@@ -1,7 +1,6 @@
 package com.example.pizzumburgum.components;
 
-import base.EntidadBase;
-import com.example.pizzumburgum.model.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Direccion extends BaseEntity {
+public class Direccion {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idDireccion;
 
     @Column
     private String calle;
