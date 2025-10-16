@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "atributo",
-        uniqueConstraints = @UniqueConstraint(name="UK_atributo_nombre", columnNames = "nombre")) //la columna nombre no puede repetirse(atributo único)
+        uniqueConstraints = @UniqueConstraint(name="UK_atributo_nombre_aplioa", columnNames = {"nombre","aplica_a"})) //la columna nombre no puede repetirse(atributo único)
 public class Atributo {
 
     @Id
@@ -31,14 +32,18 @@ public class Atributo {
     @Builder.Default
     private Set<Caracteristica> caracteristicas = new LinkedHashSet<>();
 
+
+
     /** N:1 – Funcionario que AGREGÓ el atributo */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "funcionario_alta_id", nullable = false)
+    @JsonBackReference("func-attr-alta")
     private Funcionario funcionarioAlta;
 
     /** N:1 – Funcionario que BORRÓ (o dio de baja) el atributo */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funcionario_baja_id")
+    @JsonBackReference("func-attr-baja")
     private Funcionario funcionarioBaja;
 }
 

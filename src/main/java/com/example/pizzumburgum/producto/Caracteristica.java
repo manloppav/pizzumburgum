@@ -1,6 +1,7 @@
 package com.example.pizzumburgum.producto;
 
 import com.example.pizzumburgum.actores.Funcionario;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,11 +32,13 @@ public class Caracteristica {
     /** N:1 – Funcionario que AGREGÓ la característica */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "funcionario_alta_id", nullable = false)
+    @JsonBackReference("func-carac-alta")
     private Funcionario funcionarioAlta;
 
     /** N:1 – Funcionario que BORRÓ (o dio de baja) la característica */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funcionario_baja_id")
+    @JsonBackReference("func-carac-baja")
     private Funcionario funcionarioBaja;
 }
 
