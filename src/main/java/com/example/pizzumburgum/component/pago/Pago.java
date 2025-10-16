@@ -1,5 +1,6 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.pago;
 
+import com.example.pizzumburgum.component.pedido.Pedido;
 import com.example.pizzumburgum.enums.EstadoPago;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-import com.example.pizzumburgum.component.Producto;
+import com.example.pizzumburgum.component.creacion.Producto;
 import com.example.pizzumburgum.enums.TipoProducto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

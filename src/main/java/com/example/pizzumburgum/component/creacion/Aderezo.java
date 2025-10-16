@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.creacion;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;

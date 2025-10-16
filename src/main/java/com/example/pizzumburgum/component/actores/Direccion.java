@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.actores;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,6 @@
 package com.example.pizzumburgum.repository;
 
-import com.example.pizzumburgum.component.Carrito;
+import com.example.pizzumburgum.component.carrito.Carrito;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

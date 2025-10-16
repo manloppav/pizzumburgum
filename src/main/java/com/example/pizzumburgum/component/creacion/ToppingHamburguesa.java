@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.creacion;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -14,14 +14,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "toppings_pizza")
+@Table(name = "toppings_hamburguesa")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ToppingPizza {
+public class ToppingHamburguesa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.pago;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;

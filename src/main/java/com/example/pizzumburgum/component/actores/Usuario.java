@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.actores;
 
 import com.example.pizzumburgum.enums.RolUsuario;
 import jakarta.persistence.*;

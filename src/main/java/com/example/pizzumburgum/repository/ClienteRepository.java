@@ -1,6 +1,6 @@
 package com.example.pizzumburgum.repository;
 
-import com.example.pizzumburgum.component.Cliente;
+import com.example.pizzumburgum.component.actores.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

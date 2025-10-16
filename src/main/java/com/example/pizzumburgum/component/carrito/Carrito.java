@@ -1,5 +1,6 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.carrito;
 
+import com.example.pizzumburgum.component.actores.Cliente;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

@@ -1,27 +1,27 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.creacion;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "toppings_hamburguesa")
+@Table(name = "categorias")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ToppingHamburguesa {
+@ToString(exclude = {"productos"})
+public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +33,17 @@ public class ToppingHamburguesa {
     @Column(nullable = false, unique = true, length = 100)
     private String nombre;
 
-    @Size(max = 300, message = "La descripción no puede exceder 300 caracteres")
-    @Column(length = 300)
+    @Size(max = 500, message = "La descripción no puede exceder 500 caracteres")
+    @Column(length = 500)
     private String descripcion;
-
-    @NotNull(message = "El precio adicional es obligatorio")
-    @DecimalMin(value = "0.00", message = "El precio no puede ser negativo")
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal precioAdicional;
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean disponible = true;
+    private Boolean activo = true;
+
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Producto> productos = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

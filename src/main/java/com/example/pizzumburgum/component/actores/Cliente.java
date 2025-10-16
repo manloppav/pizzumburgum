@@ -1,5 +1,8 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.actores;
 
+import com.example.pizzumburgum.component.carrito.Carrito;
+import com.example.pizzumburgum.component.pedido.Pedido;
+import com.example.pizzumburgum.component.pago.Tarjeta;
 import com.example.pizzumburgum.enums.RolUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -59,12 +62,12 @@ public class Cliente extends Usuario {
     @Builder.Default
     private List<Carrito> carritos = new ArrayList<>();
 
-    @PrePersist
+    /*@PrePersist
     public void prePersist() {
         if (getRol() == null) {
             setRol(RolUsuario.USUARIO);
         }
-    }
+    }*/
 
     public void agregarDireccionSecundaria(Direccion direccion) {
         if (direccion != null) {

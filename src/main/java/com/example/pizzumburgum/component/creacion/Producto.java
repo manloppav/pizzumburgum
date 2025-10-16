@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.creacion;
 
 import com.example.pizzumburgum.enums.TipoProducto;
 import jakarta.persistence.*;

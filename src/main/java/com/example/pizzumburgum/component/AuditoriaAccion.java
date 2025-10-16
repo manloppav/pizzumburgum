@@ -1,5 +1,6 @@
 package com.example.pizzumburgum.component;
 
+import com.example.pizzumburgum.component.actores.Funcionario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

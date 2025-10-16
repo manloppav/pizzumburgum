@@ -1,6 +1,6 @@
 package com.example.pizzumburgum.repository;
 
-import com.example.pizzumburgum.component.Pedido;
+import com.example.pizzumburgum.component.pedido.Pedido;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

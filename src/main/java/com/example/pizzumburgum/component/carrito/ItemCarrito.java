@@ -1,7 +1,11 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.carrito;
 
+import com.example.pizzumburgum.component.creacion.Aderezo;
+import com.example.pizzumburgum.component.creacion.Producto;
+import com.example.pizzumburgum.component.creacion.ToppingHamburguesa;
+import com.example.pizzumburgum.component.creacion.ToppingPizza;
 import com.example.pizzumburgum.enums.CantidadCarnes;
-import com.example.pizzumburgum.enums.TamanioPizza;
+import com.example.pizzumburgum.enums.TamanoPizza;
 import com.example.pizzumburgum.enums.TipoMasa;
 import com.example.pizzumburgum.enums.TipoQueso;
 import jakarta.persistence.*;
@@ -14,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "items_pedido")
+@Table(name = "items_carrito")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"pedido", "producto"})
-public class ItemPedido {
+@ToString(exclude = {"carrito", "producto"})
+public class ItemCarrito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +33,9 @@ public class ItemPedido {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pedido_id", nullable = false)
-    @NotNull(message = "El pedido es obligatorio")
-    private Pedido pedido;
+    @JoinColumn(name = "carrito_id", nullable = false)
+    @NotNull(message = "El carrito es obligatorio")
+    private Carrito carrito;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id", nullable = false)
@@ -46,7 +50,7 @@ public class ItemPedido {
     // Configuración para Pizzas
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private TamanioPizza tamanioPizza;
+    private TamanoPizza tamanioPizza;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -58,8 +62,8 @@ public class ItemPedido {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "item_pedido_toppings_pizza",
-            joinColumns = @JoinColumn(name = "item_pedido_id"),
+            name = "item_carrito_toppings_pizza",
+            joinColumns = @JoinColumn(name = "item_carrito_id"),
             inverseJoinColumns = @JoinColumn(name = "topping_pizza_id")
     )
     @Builder.Default
@@ -72,8 +76,8 @@ public class ItemPedido {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "item_pedido_toppings_hamburguesa",
-            joinColumns = @JoinColumn(name = "item_pedido_id"),
+            name = "item_carrito_toppings_hamburguesa",
+            joinColumns = @JoinColumn(name = "item_carrito_id"),
             inverseJoinColumns = @JoinColumn(name = "topping_hamburguesa_id")
     )
     @Builder.Default
@@ -81,8 +85,8 @@ public class ItemPedido {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "item_pedido_aderezos",
-            joinColumns = @JoinColumn(name = "item_pedido_id"),
+            name = "item_carrito_aderezos",
+            joinColumns = @JoinColumn(name = "item_carrito_id"),
             inverseJoinColumns = @JoinColumn(name = "aderezo_id")
     )
     @Builder.Default

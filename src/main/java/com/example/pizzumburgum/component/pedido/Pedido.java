@@ -1,6 +1,10 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.pedido;
 
+import com.example.pizzumburgum.component.actores.Direccion;
+import com.example.pizzumburgum.component.pago.Pago;
+import com.example.pizzumburgum.component.actores.Cliente;
 import com.example.pizzumburgum.enums.EstadoPedido;
+import com.example.pizzumburgum.component.pedido.ItemPedido;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

@@ -1,5 +1,6 @@
-package com.example.pizzumburgum.component;
+package com.example.pizzumburgum.component.actores;
 
+import com.example.pizzumburgum.component.AuditoriaAccion;
 import com.example.pizzumburgum.enums.RolUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
