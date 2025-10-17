@@ -1,9 +1,6 @@
 package com.example.pizzumburgum.component.carrito;
 
-import com.example.pizzumburgum.component.creacion.Aderezo;
 import com.example.pizzumburgum.component.creacion.Producto;
-import com.example.pizzumburgum.component.creacion.ToppingHamburguesa;
-import com.example.pizzumburgum.component.creacion.ToppingPizza;
 import com.example.pizzumburgum.enums.CantidadCarnes;
 import com.example.pizzumburgum.enums.TamanoPizza;
 import com.example.pizzumburgum.enums.TipoMasa;
@@ -60,28 +57,28 @@ public class ItemCarrito {
     @Column(length = 20)
     private TipoQueso tipoQueso;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "item_carrito_toppings_pizza",
-            joinColumns = @JoinColumn(name = "item_carrito_id"),
-            inverseJoinColumns = @JoinColumn(name = "topping_pizza_id")
-    )
-    @Builder.Default
-    private List<ToppingPizza> toppingsPizza = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "item_carrito_toppings_pizza",
+//            joinColumns = @JoinColumn(name = "item_carrito_id"),
+//            inverseJoinColumns = @JoinColumn(name = "topping_pizza_id")
+//    )
+//    @Builder.Default
+    //private List<ToppingPizza> toppingsPizza = new ArrayList<>();
 
     // Configuración para Hamburguesas
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private CantidadCarnes cantidadCarnes;
+    //@Enumerated(EnumType.STRING)
+    //@Column(length = 20)
+    //private CantidadCarnes cantidadCarnes;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "item_carrito_toppings_hamburguesa",
-            joinColumns = @JoinColumn(name = "item_carrito_id"),
-            inverseJoinColumns = @JoinColumn(name = "topping_hamburguesa_id")
-    )
-    @Builder.Default
-    private List<ToppingHamburguesa> toppingsHamburguesa = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "item_carrito_toppings_hamburguesa",
+//            joinColumns = @JoinColumn(name = "item_carrito_id"),
+//            inverseJoinColumns = @JoinColumn(name = "topping_hamburguesa_id")
+//    )
+//    @Builder.Default
+    /*private List<ToppingHamburguesa> toppingsHamburguesa = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -90,18 +87,18 @@ public class ItemCarrito {
             inverseJoinColumns = @JoinColumn(name = "aderezo_id")
     )
     @Builder.Default
-    private List<Aderezo> aderezos = new ArrayList<>();
+    private List<Aderezo> aderezos = new ArrayList<>();*/
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal precioUnitario;
+//    @Column(nullable = false, precision = 10, scale = 2)
+//    private BigDecimal precioUnitario;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal subtotal;
+//    @Column(nullable = false, precision = 10, scale = 2)
+//    private BigDecimal subtotal;
+//
+//    @Column(length = 500)
+//    private String observaciones;
 
-    @Column(length = 500)
-    private String observaciones;
-
-    public BigDecimal calcularSubtotal() {
+    /*public BigDecimal calcularSubtotal() {
         if (precioUnitario == null || cantidad == null) {
             return BigDecimal.ZERO;
         }
@@ -135,7 +132,7 @@ public class ItemCarrito {
             subtotalBase = subtotalBase.add(totalAderezos);
         }
 
-        return subtotalBase;
+        return subtotalBase
     }
 
     public void actualizarSubtotal() {
@@ -145,6 +142,5 @@ public class ItemCarrito {
     @PrePersist
     @PreUpdate
     public void calcularSubtotalAutomatico() {
-        actualizarSubtotal();
-    }
+        actualizarSubtotal();*/
 }

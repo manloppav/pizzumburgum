@@ -1,6 +1,5 @@
 package com.example.pizzumburgum.repository;
 
-import com.example.pizzumburgum.component.creacion.ToppingPizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

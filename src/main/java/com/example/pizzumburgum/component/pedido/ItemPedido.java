@@ -1,9 +1,6 @@
 package com.example.pizzumburgum.component.pedido;
 
-import com.example.pizzumburgum.component.creacion.Aderezo;
 import com.example.pizzumburgum.component.creacion.Producto;
-import com.example.pizzumburgum.component.creacion.ToppingHamburguesa;
-import com.example.pizzumburgum.component.creacion.ToppingPizza;
 import com.example.pizzumburgum.enums.CantidadCarnes;
 import com.example.pizzumburgum.enums.TamanoPizza;
 import com.example.pizzumburgum.enums.TipoMasa;
@@ -66,31 +63,31 @@ public class ItemPedido {
             joinColumns = @JoinColumn(name = "item_pedido_id"),
             inverseJoinColumns = @JoinColumn(name = "topping_pizza_id")
     )
-    @Builder.Default
-    private List<ToppingPizza> toppingsPizza = new ArrayList<>();
+//    @Builder.Default
+//    private List<ToppingPizza> toppingsPizza = new ArrayList<>();
 
-    // Configuración para Hamburguesas
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private CantidadCarnes cantidadCarnes;
+//    // Configuración para Hamburguesas
+//    @Enumerated(EnumType.STRING)
+//    @Column(length = 20)
+//    private CantidadCarnes cantidadCarnes;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "item_pedido_toppings_hamburguesa",
-            joinColumns = @JoinColumn(name = "item_pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "topping_hamburguesa_id")
-    )
-    @Builder.Default
-    private List<ToppingHamburguesa> toppingsHamburguesa = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "item_pedido_aderezos",
-            joinColumns = @JoinColumn(name = "item_pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "aderezo_id")
-    )
-    @Builder.Default
-    private List<Aderezo> aderezos = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "item_pedido_toppings_hamburguesa",
+//            joinColumns = @JoinColumn(name = "item_pedido_id"),
+//            inverseJoinColumns = @JoinColumn(name = "topping_hamburguesa_id")
+//    )
+//    @Builder.Default
+//    private List<ToppingHamburguesa> toppingsHamburguesa = new ArrayList<>();
+//
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "item_pedido_aderezos",
+//            joinColumns = @JoinColumn(name = "item_pedido_id"),
+//            inverseJoinColumns = @JoinColumn(name = "aderezo_id")
+//    )
+//    @Builder.Default
+//    private List<Aderezo> aderezos = new ArrayList<>();
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitario;
@@ -109,31 +106,31 @@ public class ItemPedido {
         BigDecimal subtotalBase = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
 
         // Agregar precio de toppings de pizza
-        if (toppingsPizza != null && !toppingsPizza.isEmpty()) {
-            BigDecimal totalToppingsPizza = toppingsPizza.stream()
-                    .map(ToppingPizza::getPrecioAdicional)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .multiply(BigDecimal.valueOf(cantidad));
-            subtotalBase = subtotalBase.add(totalToppingsPizza);
-        }
+//        if (toppingsPizza != null && !toppingsPizza.isEmpty()) {
+//            BigDecimal totalToppingsPizza = toppingsPizza.stream()
+//                    .map(ToppingPizza::getPrecioAdicional)
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+//                    .multiply(BigDecimal.valueOf(cantidad));
+//            subtotalBase = subtotalBase.add(totalToppingsPizza);
+//        }
 
         // Agregar precio de toppings de hamburguesa
-        if (toppingsHamburguesa != null && !toppingsHamburguesa.isEmpty()) {
-            BigDecimal totalToppingsHamburguesa = toppingsHamburguesa.stream()
-                    .map(ToppingHamburguesa::getPrecioAdicional)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .multiply(BigDecimal.valueOf(cantidad));
-            subtotalBase = subtotalBase.add(totalToppingsHamburguesa);
-        }
+//        if (toppingsHamburguesa != null && !toppingsHamburguesa.isEmpty()) {
+//            BigDecimal totalToppingsHamburguesa = toppingsHamburguesa.stream()
+//                    .map(ToppingHamburguesa::getPrecioAdicional)
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+//                    .multiply(BigDecimal.valueOf(cantidad));
+//            subtotalBase = subtotalBase.add(totalToppingsHamburguesa);
+//        }
 
         // Agregar precio de aderezos
-        if (aderezos != null && !aderezos.isEmpty()) {
-            BigDecimal totalAderezos = aderezos.stream()
-                    .map(Aderezo::getPrecioAdicional)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .multiply(BigDecimal.valueOf(cantidad));
-            subtotalBase = subtotalBase.add(totalAderezos);
-        }
+//        if (aderezos != null && !aderezos.isEmpty()) {
+//            BigDecimal totalAderezos = aderezos.stream()
+//                    .map(Aderezo::getPrecioAdicional)
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+//                    .multiply(BigDecimal.valueOf(cantidad));
+//            subtotalBase = subtotalBase.add(totalAderezos);
+//        }
 
         return subtotalBase;
     }
