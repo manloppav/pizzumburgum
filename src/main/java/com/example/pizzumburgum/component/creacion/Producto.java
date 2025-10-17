@@ -80,6 +80,8 @@ public class Producto {
         return stock != null && stock > 0;
     }
 
+
+
     public void reducirStock(int cantidad) {
         if (stock != null && stock >= cantidad) {
             stock -= cantidad;
