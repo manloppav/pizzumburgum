@@ -1,15 +1,24 @@
 package com.example.pizzumburgum.enums;
 
 public enum CategoriaProducto {
-    TOPPING_PIZZA,
-    TOPPING_HAMBURGUESA,
-    SALSA_PIZZA,
-    SALSA_HAMBURGUESA,
-    TAMANIO_PIZZA,
+    // BASES (elegís una u otra)
+    PIZZA_BASE,
+    HAMBURGUESA_BASE,
+
+    // PIZZA
     TIPO_MASA,
+    SALSA_PIZZA,
+    TAMANIO_PIZZA,
+    TOPPING_PIZZA,
+
+    // HAMBURGUESA
     TIPO_PAN,
-    TIPO_QUESO,
     TIPO_CARNE,
+    TIPO_QUESO,
+    SALSA_HAMBURGUESA,
+    TOPPING_HAMBURGUESA,
+
+    // Comunes
     ACOMPANIAMIENTO,
     BEBIDA
 }
