@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -23,6 +24,10 @@ public class CreacionService {
     private final CreacionRepositorio creacionRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final ProductoRepositorio productoRepositorio;
+
+    public Optional<Creacion> buscarPorId(Long id) {
+        return creacionRepositorio.findById(id);
+    }
 
     @Transactional
     public Creacion crearCreacion(Long usuarioId, List<Long> productoIds) {
