@@ -1,6 +1,6 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
-import com.example.pizzumburgum.Repositorio.PedidoRepositorio;
+import com.example.pizzumburgum.repositorio.PedidoRepositorio;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.exception.ResourceNotFoundException;

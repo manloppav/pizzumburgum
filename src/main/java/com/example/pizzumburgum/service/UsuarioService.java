@@ -1,7 +1,7 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.Usuario;
-import com.example.pizzumburgum.Repositorio.UsuarioRepositorio;
+import com.example.pizzumburgum.repositorio.UsuarioRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

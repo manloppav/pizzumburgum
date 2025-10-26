@@ -1,7 +1,7 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.Producto;
-import com.example.pizzumburgum.Repositorio.ProductoRepositorio;
+import com.example.pizzumburgum.repositorio.ProductoRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

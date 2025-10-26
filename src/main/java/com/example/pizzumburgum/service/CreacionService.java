@@ -1,8 +1,8 @@
 // src/main/java/com/example/pizzumburgum/service/CreacionService.java
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.Creacion;
-import com.example.pizzumburgum.Repositorio.*;
+import com.example.pizzumburgum.repositorio.*;
 import com.example.pizzumburgum.entities.Producto;
 import com.example.pizzumburgum.entities.Usuario;
 import com.example.pizzumburgum.enums.CategoriaProducto;
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
-import java.util.Optional;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
