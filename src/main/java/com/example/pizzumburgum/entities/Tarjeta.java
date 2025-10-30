@@ -1,9 +1,11 @@
 package com.example.pizzumburgum.entities;
 
+import com.example.pizzumburgum.enums.TipoTarjeta;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -38,6 +40,14 @@ public class Tarjeta {
     @Size(min = 2, max = 100, message = "El titular debe tener entre 2 y 100 caracteres")
     @Column(name = "titular", nullable = false, length = 100)
     private String titular;
+
+    @NotNull(message = "El tipo de tarjeta es obligatorio")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false, length = 20)
+    private TipoTarjeta tipo;
+
+    @Column(nullable = false)
+    private boolean principal = false;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
