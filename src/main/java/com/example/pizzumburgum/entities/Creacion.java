@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +43,20 @@ public class Creacion {
     private Usuario usuario;
 
     @Transient
-    public BigDecimal getPrecioTotal() {
-        return productos.stream()
-                .map(Producto::getPrecio)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    private BigDecimal precioTotal;
 
+    @Transient
+    public BigDecimal getPrecioTotal() {
+        // Si el precio fue seteado manualmente (por test o snapshot), usar ese
+        if (precioTotal != null)
+            return precioTotal.setScale(2, RoundingMode.HALF_UP);
+
+        // Si no, calcular en base a los productos asociados
+        return productos == null
+                ? BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP)
+                : productos.stream()
+                .map(Producto::getPrecio)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+    }
 }
