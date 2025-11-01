@@ -18,4 +18,9 @@ public class UsuarioService {
     public Optional<Usuario> buscarPorId(Long id) {
         return usuarioRepositorio.findById(id);
     }
+
+    // cambiar tarjeta
+    // cambiar direccion
+
+
 }

@@ -1,14 +1,15 @@
 package com.example.pizzumburgum.service;
 
-import com.example.pizzumburgum.repositorio.PedidoRepositorio;
+import com.example.pizzumburgum.Service.PedidoService;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
-import com.example.pizzumburgum.exception.ResourceNotFoundException;
+import com.example.pizzumburgum.repositorio.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,84 +18,161 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class PedidoServiceTest {
 
-    @Mock
-    private PedidoRepositorio pedidoRepositorio;
-
-    @Mock
-    private UsuarioService usuarioService;
-
-    @Mock
-    private ProductoService productoService;
-
-    @Mock
-    private CreacionService creacionService;
+    @Mock private UsuarioRepositorio usuarioRepositorio;
+    @Mock private CarritoRepositorio carritoRepositorio;
+    @Mock private PedidoRepositorio pedidoRepositorio;
+    @Mock private TarjetaRepositorio tarjetaRepositorio;
+    @Mock private PagoRepositorio pagoRepositorio;
 
     @InjectMocks
     private PedidoService pedidoService;
 
+    private Usuario usuario;
+    private Tarjeta tarjeta;
+    private Carrito carrito;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        usuario = new Usuario();
+        usuario.setId(10L);
+
+        tarjeta = new Tarjeta();
+        tarjeta.setId(7L);
+        tarjeta.setUsuario(usuario);
+
+        carrito = new Carrito();
+        carrito.setUsuario(usuario);
+
+        // Item del carrito con subtotal 240.00
+        CarritoItem item = new CarritoItem();
+        item.setCantidad(2);
+        item.setSubtotal(new BigDecimal("240.00"));
+        carrito.getItems().add(item);
+        carrito.recalcularTotal(); // total = 240.00
     }
 
     @Test
-    void testCrearPedido() {
-        // Datos de prueba
-        Long usuarioId = 1L;                //A la hora de crear un pedido, el usuario debe estar creado, no se crea al pedir.
-        Usuario usuario = new Usuario();
-        usuario.setId(usuarioId);
+    void crearPedido_ok() {
+        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
+        when(carritoRepositorio.findByUsuarioId(10L)).thenReturn(Optional.of(carrito));
+        when(tarjetaRepositorio.findById(7L)).thenReturn(Optional.of(tarjeta));
+        when(pedidoRepositorio.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(pagoRepositorio.save(any(Pago.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Producto producto = new Producto();     //  A la hora de crear un pedido, el producto debe estar creado
-        producto.setId(1L);
-        producto.setPrecio(new BigDecimal("100.00"));
+        // 🔹 snapshot del total ANTES de crear el pedido
+        BigDecimal totalAntes = carrito.getTotal(); // 240.00
 
-        PedidoItem item = new PedidoItem();
-        item.setProducto(producto);
-        item.setCantidad(2);
+        Pedido pedido = pedidoService.crearPedido(10L, 7L, "Sin cebolla", "Av. Rivera 1234");
 
-        List<PedidoItem> items = List.of(item);
+        // El pedido conserva el total original del carrito
+        assertEquals(totalAntes, pedido.getPrecioTotal());
 
-        Pedido pedidoGuardado = new Pedido();
-        pedidoGuardado.setId(1L);
-        pedidoGuardado.setUsuario(usuario);
-        pedidoGuardado.setEstado(EstadoPedido.PENDIENTE);
-        pedidoGuardado.setPrecioTotal(new BigDecimal("200.00"));
-        pedidoGuardado.setItems(items);
+        // El carrito fue vaciado y su total quedó en 0.00
+        assertEquals(0, carrito.getItems().size());
+        assertEquals(new BigDecimal("0.00"), carrito.getTotal());
 
-        // Mock de servicios
-        when(usuarioService.buscarPorId(usuarioId)).thenReturn(Optional.of(usuario));
-        when(productoService.buscarPorId(producto.getId())).thenReturn(Optional.of(producto));
-        when(pedidoRepositorio.save(any(Pedido.class))).thenReturn(pedidoGuardado);
-
-        // Ejecución
-        Pedido pedido = pedidoService.crearPedido(usuarioId, items, "Sin observaciones");
-
-        // Verificaciones
-        assertNotNull(pedido);
-        assertEquals(usuarioId, pedido.getUsuario().getId());
+        // Chequeos extra
+        assertEquals(usuario, pedido.getUsuario());
         assertEquals(EstadoPedido.PENDIENTE, pedido.getEstado());
-        assertEquals(new BigDecimal("200.00"), pedido.getPrecioTotal());
         assertEquals(1, pedido.getItems().size());
+        verify(pagoRepositorio, times(1)).save(any(Pago.class));
+        verify(carritoRepositorio, times(1)).save(any(Carrito.class));
+    }
 
-        verify(usuarioService, times(1)).buscarPorId(usuarioId);
-        verify(productoService, times(1)).buscarPorId(producto.getId());
+    @Test
+    void crearPedido_falla_usuarioNoExiste() {
+        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class,
+                () -> pedidoService.crearPedido(10L, 7L, "nota", "dir"));
+    }
+
+    @Test
+    void crearPedido_falla_carritoVacio() {
+        carrito.getItems().clear();
+        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
+        when(carritoRepositorio.findByUsuarioId(10L)).thenReturn(Optional.of(carrito));
+        assertThrows(IllegalArgumentException.class,
+                () -> pedidoService.crearPedido(10L, 7L, "nota", "dir"));
+    }
+
+    @Test
+    void crearPedido_falla_tarjetaNoExiste() {
+        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
+        when(carritoRepositorio.findByUsuarioId(10L)).thenReturn(Optional.of(carrito));
+        when(tarjetaRepositorio.findById(7L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class,
+                () -> pedidoService.crearPedido(10L, 7L, "nota", "dir"));
+    }
+
+    @Test
+    void crearPedido_falla_tarjetaNoPertenece() {
+        Usuario otroUsuario = new Usuario();
+        otroUsuario.setId(99L);
+        tarjeta.setUsuario(otroUsuario);
+
+        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
+        when(carritoRepositorio.findByUsuarioId(10L)).thenReturn(Optional.of(carrito));
+        when(tarjetaRepositorio.findById(7L)).thenReturn(Optional.of(tarjeta));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> pedidoService.crearPedido(10L, 7L, "nota", "dir"));
+    }
+
+    @Test
+    void editarPedido_ok() {
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+
+        Pedido pedido = new Pedido();
+        pedido.setId(5L);
+        pedido.setUsuario(usuario);
+        pedido.setEstado(EstadoPedido.PENDIENTE);
+        pedido.setObservaciones("vieja");
+        pedido.setDireccionEntrega("viejaDir");
+
+        when(pedidoRepositorio.findById(5L)).thenReturn(Optional.of(pedido));
+        when(pedidoRepositorio.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Pedido result = pedidoService.editarPedido(10L, 5L, "nueva", "nuevaDir");
+
+        assertEquals("nueva", result.getObservaciones());
+        assertEquals("nuevaDir", result.getDireccionEntrega());
         verify(pedidoRepositorio, times(1)).save(any(Pedido.class));
     }
 
     @Test
-    void testCrearPedidoUsuarioNoEncontrado() {
-        Long usuarioId = 1L;
-        List<PedidoItem> items = List.of();
+    void editarPedido_falla_usuarioNoEsPropietario() {
+        Usuario dueño = new Usuario();
+        dueño.setId(99L);
 
-        when(usuarioService.buscarPorId(usuarioId)).thenReturn(Optional.empty());
+        Pedido pedido = new Pedido();
+        pedido.setId(6L);
+        pedido.setUsuario(dueño);
+        pedido.setEstado(EstadoPedido.PENDIENTE);
 
-        assertThrows(ResourceNotFoundException.class, () -> {
-            pedidoService.crearPedido(usuarioId, items, "Sin observaciones");
-        });
+        when(pedidoRepositorio.findById(6L)).thenReturn(Optional.of(pedido));
 
-        verify(usuarioService, times(1)).buscarPorId(usuarioId);
-        verifyNoInteractions(productoService, pedidoRepositorio);
+        assertThrows(IllegalArgumentException.class,
+                () -> pedidoService.editarPedido(10L, 6L, "nota", "dir"));
     }
+
+    @Test
+    void editarPedido_falla_noEditableEstado() {
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+
+        Pedido pedido = new Pedido();
+        pedido.setId(7L);
+        pedido.setUsuario(usuario);
+        pedido.setEstado(EstadoPedido.ENTREGADO); // estado no editable
+
+        when(pedidoRepositorio.findById(7L)).thenReturn(Optional.of(pedido));
+
+        assertThrows(IllegalStateException.class,
+                () -> pedidoService.editarPedido(10L, 7L, "nota", "dir"));
+    }
+
 }
