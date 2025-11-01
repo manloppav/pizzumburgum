@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

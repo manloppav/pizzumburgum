@@ -1,6 +1,5 @@
 package com.example.pizzumburgum.service;
 
-import com.example.pizzumburgum.Service.PedidoService;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.repositorio.*;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -145,12 +143,12 @@ class PedidoServiceTest {
 
     @Test
     void editarPedido_falla_usuarioNoEsPropietario() {
-        Usuario dueño = new Usuario();
-        dueño.setId(99L);
+        Usuario dueno = new Usuario();
+        dueno.setId(99L);
 
         Pedido pedido = new Pedido();
         pedido.setId(6L);
-        pedido.setUsuario(dueño);
+        pedido.setUsuario(dueno);
         pedido.setEstado(EstadoPedido.PENDIENTE);
 
         when(pedidoRepositorio.findById(6L)).thenReturn(Optional.of(pedido));
