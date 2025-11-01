@@ -49,4 +49,8 @@ public class Pago {
         fechaPago = LocalDateTime.now();
     }
 
+    @Column(length = 100)
+    private String codigoAutorizacion;
+
+
 }

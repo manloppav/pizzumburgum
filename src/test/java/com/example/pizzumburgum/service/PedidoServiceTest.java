@@ -1,6 +1,6 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
-import com.example.pizzumburgum.Repositorio.PedidoRepositorio;
+import com.example.pizzumburgum.repositorio.PedidoRepositorio;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.exception.ResourceNotFoundException;
@@ -42,11 +42,11 @@ class PedidoServiceTest {
     @Test
     void testCrearPedido() {
         // Datos de prueba
-        Long usuarioId = 1L;
+        Long usuarioId = 1L;                //A la hora de crear un pedido, el usuario debe estar creado, no se crea al pedir.
         Usuario usuario = new Usuario();
         usuario.setId(usuarioId);
 
-        Producto producto = new Producto();
+        Producto producto = new Producto();     //  A la hora de crear un pedido, el producto debe estar creado
         producto.setId(1L);
         producto.setPrecio(new BigDecimal("100.00"));
 

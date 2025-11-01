@@ -1,9 +1,9 @@
-package com.example.pizzumburgum.Service;
+package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.exception.ResourceNotFoundException;
-import com.example.pizzumburgum.Repositorio.*;
+import com.example.pizzumburgum.repositorio.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

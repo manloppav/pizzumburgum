@@ -41,6 +41,9 @@ public class Pedido {
     @Column(length = 1000)
     private String observaciones;
 
+    @Column(length = 255)
+    private String direccionEntrega;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonBackReference
@@ -52,5 +55,4 @@ public class Pedido {
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private Pago pago;
-
 }

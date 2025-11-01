@@ -27,11 +27,14 @@ public class Carrito {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
-    @Transient
-    public BigDecimal getPrecioTotal() {
-        return items.stream()
+    // Total persistido en la base de datos
+    @Column(name = "total", precision = 10, scale = 2)
+    private BigDecimal total = BigDecimal.ZERO;
+
+    // MEtodo para recalcular y actualizar el total del carrito
+    public void recalcularTotal() {
+        this.total = items.stream()
                 .map(CarritoItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 }

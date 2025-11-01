@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.Repositorio;
+package com.example.pizzumburgum.repositorio;
 
 import com.example.pizzumburgum.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
