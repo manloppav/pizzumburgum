@@ -7,18 +7,15 @@ import com.example.pizzumburgum.enums.CategoriaProducto;
 import com.example.pizzumburgum.repositorio.CreacionRepositorio;
 import com.example.pizzumburgum.repositorio.ProductoRepositorio;
 import com.example.pizzumburgum.repositorio.UsuarioRepositorio;
-import com.example.pizzumburgum.rules.ReglasMinimas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,93 +23,236 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CreacionServiceTest {
 
-    @Mock private CreacionRepositorio creacionRepositorio;
     @Mock private UsuarioRepositorio usuarioRepositorio;
     @Mock private ProductoRepositorio productoRepositorio;
+    @Mock private CreacionRepositorio creacionRepositorio;
 
     @InjectMocks
     private CreacionService creacionService;
 
     private Usuario usuario;
-    private Producto basePizza;
-    private Producto masaFina;
-    private Producto salsaRoja;
 
     @BeforeEach
     void setup() {
         usuario = new Usuario();
         usuario.setId(10L);
-
-        basePizza = producto(1L, "Pizza base", CategoriaProducto.PIZZA_BASE, new BigDecimal("500.00"));
-        masaFina  = producto(2L, "Masa fina",   CategoriaProducto.TIPO_MASA, new BigDecimal("0.00"));
-        salsaRoja = producto(3L, "Salsa roja",  CategoriaProducto.SALSA_PIZZA, new BigDecimal("0.00"));
     }
 
-    @Test
-    void crearCreacion_ok() {
-        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
-        when(productoRepositorio.findAllById(List.of(1L,2L,3L)))
-                .thenReturn(List.of(basePizza, masaFina, salsaRoja));
+    /* ===================== Helpers ===================== */
 
-        // simular save devolviendo la misma entidad con id
-        when(creacionRepositorio.save(any(Creacion.class))).thenAnswer(inv -> {
-            Creacion c = inv.getArgument(0);
-            c.setId(100L);
-            return c;
-        });
-
-        Creacion creada = creacionService.crearCreacion(10L, List.of(1L,2L,3L));
-
-        assertNotNull(creada.getId());
-        assertEquals(usuario.getId(), creada.getUsuario().getId());
-        assertEquals(3, creada.getProductos().size());
-
-        // opcional: capturar el objeto que se guardó
-        ArgumentCaptor<Creacion> captor = ArgumentCaptor.forClass(Creacion.class);
-        verify(creacionRepositorio).save(captor.capture());
-        assertEquals(3, captor.getValue().getProductos().size());
-    }
-
-    @Test
-    void crearCreacion_falla_siUsuarioNoExiste() {
-        when(usuarioRepositorio.findById(999L)).thenReturn(Optional.empty());
-
-        var ex = assertThrows(IllegalArgumentException.class,
-                () -> creacionService.crearCreacion(999L, List.of(1L)));
-        assertTrue(ex.getMessage().contains("Usuario no encontrado"));
-        verifyNoInteractions(productoRepositorio, creacionRepositorio);
-    }
-
-    @Test
-    void crearCreacion_falla_siListaProductosVacia() {
-        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
-        when(productoRepositorio.findAllById(List.of())).thenReturn(List.of());
-
-        var ex = assertThrows(IllegalArgumentException.class,
-                () -> creacionService.crearCreacion(10L, List.of()));
-        assertTrue(ex.getMessage().contains("al menos un producto"));
-        verify(creacionRepositorio, never()).save(any());
-    }
-
-    @Test
-    void crearCreacion_falla_siNoHayProductoBase() {
-        when(usuarioRepositorio.findById(10L)).thenReturn(Optional.of(usuario));
-        // productos sin PIZZA_BASE / HAMBURGUESA_BASE
-        when(productoRepositorio.findAllById(List.of(2L,3L))).thenReturn(List.of(masaFina, salsaRoja));
-
-        var ex = assertThrows(IllegalArgumentException.class,
-                () -> creacionService.crearCreacion(10L, List.of(2L,3L)));
-        assertTrue(ex.getMessage().toLowerCase().contains("producto base"));
-        verify(creacionRepositorio, never()).save(any());
-    }
-
-    // helper
-    private static Producto producto(Long id, String nombre, CategoriaProducto cat, BigDecimal precio) {
+    private Producto prod(long id, CategoriaProducto cat, String nombre, String precio) {
         Producto p = new Producto();
         p.setId(id);
-        p.setNombre(nombre);
         p.setCategoria(cat);
-        p.setPrecio(precio);
+        p.setNombre(nombre);
+        p.setPrecio(new BigDecimal(precio));
         return p;
+    }
+
+    /** Para casos OK (sí se invoca save) */
+    private void stubOk(Long usuarioId, List<Long> ids, List<Producto> productos) {
+        when(usuarioRepositorio.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(productoRepositorio.findAllById(ids)).thenReturn(productos);
+        when(creacionRepositorio.save(any(Creacion.class))).thenAnswer(inv -> inv.getArgument(0));
+    }
+
+    /** Para casos que deben fallar antes de save */
+    private void stubError(Long usuarioId, List<Long> ids, List<Producto> productos) {
+        when(usuarioRepositorio.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(productoRepositorio.findAllById(ids)).thenReturn(productos);
+        // No stubbear save para evitar UnnecessaryStubbingException
+    }
+
+    /* ===================== Casos OK ===================== */
+
+    @Test
+    void crearCreacion_pizza_ok() {
+        List<Long> ids = List.of(1L,2L,3L,4L,5L,6L,7L,8L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base Pizza", "0"),
+                prod(2, CategoriaProducto.TIPO_MASA, "Masa Fina", "0"),
+                prod(3, CategoriaProducto.TAMANIO_PIZZA, "Mediana", "0"),
+                prod(4, CategoriaProducto.SALSA_PIZZA, "Roja", "0"),
+                prod(5, CategoriaProducto.SALSA_PIZZA, "Blanca", "0"),
+                prod(6, CategoriaProducto.TOPPING_PIZZA, "Olivas", "0"),
+                prod(7, CategoriaProducto.TOPPING_PIZZA, "Jamón", "0"),
+                prod(8, CategoriaProducto.BEBIDA, "Coca", "120.00")
+        );
+        stubOk(10L, ids, prods);
+
+        Creacion creada = creacionService.crearCreacion(10L, ids);
+
+        assertNotNull(creada);
+        assertEquals(usuario, creada.getUsuario());
+        assertEquals(prods.size(), creada.getProductos().size());
+        verify(creacionRepositorio, times(1)).save(any(Creacion.class));
+    }
+
+    @Test
+    void crearCreacion_hamburguesa_ok() {
+        List<Producto> prods = new ArrayList<>();
+        long id = 1;
+        prods.add(prod(id++, CategoriaProducto.HAMBURGUESA_BASE, "Base Hamb", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_PAN, "Pan Brioche", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_CARNE, "Carne 1", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_CARNE, "Carne 2", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_QUESO, "Queso", "0"));
+        prods.add(prod(id++, CategoriaProducto.SALSA_HAMBURGUESA, "Mostaza", "0"));
+        prods.add(prod(id++, CategoriaProducto.SALSA_HAMBURGUESA, "BBQ", "0"));
+        for (int i = 0; i < 5; i++) prods.add(prod(id++, CategoriaProducto.TOPPING_HAMBURGUESA, "Top"+i, "0"));
+        prods.add(prod(id++, CategoriaProducto.ACOMPANIAMIENTO, "Papas", "200.00"));
+
+        List<Long> ids = prods.stream().map(Producto::getId).toList();
+        stubOk(10L, ids, prods);
+
+        Creacion creada = creacionService.crearCreacion(10L, ids);
+
+        assertNotNull(creada);
+        assertEquals(usuario, creada.getUsuario());
+        assertEquals(prods.size(), creada.getProductos().size());
+        verify(creacionRepositorio, times(1)).save(any(Creacion.class));
+    }
+
+    /* ===================== Casos de error ===================== */
+
+    @Test
+    void crearCreacion_falla_sinBase() {
+        List<Long> ids = List.of(1L,2L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.TIPO_MASA, "Masa", "0"),
+                prod(2, CategoriaProducto.TAMANIO_PIZZA, "Tamaño", "0")
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+        verify(creacionRepositorio, never()).save(any());
+    }
+
+    @Test
+    void crearCreacion_falla_multiplesBases() {
+        List<Long> ids = List.of(1L,2L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base Pizza", "0"),
+                prod(2, CategoriaProducto.HAMBURGUESA_BASE, "Base Hamb", "0")
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_categoriaNoPermitida_enPizza() {
+        List<Long> ids = List.of(1L,2L,3L,4L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base Pizza", "0"),
+                prod(2, CategoriaProducto.TIPO_MASA, "Masa", "0"),
+                prod(3, CategoriaProducto.TAMANIO_PIZZA, "Tamaño", "0"),
+                prod(4, CategoriaProducto.TIPO_CARNE, "Carne", "0") // no permitido en pizza
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_excesoCarnes_enHamburguesa() {
+        List<Producto> prods = new ArrayList<>();
+        long id = 1;
+        prods.add(prod(id++, CategoriaProducto.HAMBURGUESA_BASE, "Base Hamb", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_PAN, "Pan", "0"));
+        for (int i = 0; i < 4; i++) prods.add(prod(id++, CategoriaProducto.TIPO_CARNE, "Carne"+i, "0")); // >3
+        List<Long> ids = prods.stream().map(Producto::getId).toList();
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_excesoToppings_enPizza() {
+        List<Producto> prods = new ArrayList<>();
+        long id = 1;
+        prods.add(prod(id++, CategoriaProducto.PIZZA_BASE, "Base", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_MASA, "Masa", "0"));
+        prods.add(prod(id++, CategoriaProducto.TAMANIO_PIZZA, "Tamaño", "0"));
+        for (int i = 0; i < 6; i++) prods.add(prod(id++, CategoriaProducto.TOPPING_PIZZA, "Top"+i, "0")); // >5
+        List<Long> ids = prods.stream().map(Producto::getId).toList();
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_excesoSalsas_enHamburguesa() {
+        List<Producto> prods = new ArrayList<>();
+        long id = 1;
+        prods.add(prod(id++, CategoriaProducto.HAMBURGUESA_BASE, "Base", "0"));
+        prods.add(prod(id++, CategoriaProducto.TIPO_PAN, "Pan", "0"));
+        for (int i = 0; i < 3; i++) prods.add(prod(id++, CategoriaProducto.SALSA_HAMBURGUESA, "Salsa"+i, "0")); // >2
+        List<Long> ids = prods.stream().map(Producto::getId).toList();
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_dosBebidas() {
+        List<Long> ids = List.of(1L,2L,3L,4L,5L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base Pizza", "0"),
+                prod(2, CategoriaProducto.TIPO_MASA, "Masa", "0"),
+                prod(3, CategoriaProducto.TAMANIO_PIZZA, "Tamaño", "0"),
+                prod(4, CategoriaProducto.BEBIDA, "Cola", "0"),
+                prod(5, CategoriaProducto.BEBIDA, "Naranja", "0") // 2 bebidas
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_pizza_sinMasa() {
+        List<Long> ids = List.of(1L,2L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base", "0"),
+                prod(2, CategoriaProducto.TAMANIO_PIZZA, "Tamaño", "0") // falta masa
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_pizza_multiplesMasas() {
+        List<Long> ids = List.of(1L,2L,3L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.PIZZA_BASE, "Base", "0"),
+                prod(2, CategoriaProducto.TIPO_MASA, "Masa A", "0"),
+                prod(3, CategoriaProducto.TIPO_MASA, "Masa B", "0") // 2 masas
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
+    }
+
+    @Test
+    void crearCreacion_falla_hamburguesa_sinPan() {
+        List<Long> ids = List.of(1L,2L);
+        List<Producto> prods = List.of(
+                prod(1, CategoriaProducto.HAMBURGUESA_BASE, "Base", "0"),
+                prod(2, CategoriaProducto.TIPO_CARNE, "Carne", "0") // falta pan
+        );
+        stubError(10L, ids, prods);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> creacionService.crearCreacion(10L, ids));
     }
 }
