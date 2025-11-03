@@ -12,7 +12,7 @@ public interface TarjetaRepositorio extends JpaRepository<Tarjeta, Long> {
     // Buscar todas las tarjetas de un usuario
     List<Tarjeta> findByUsuarioId(Long usuarioId);
 
-    // Verificar si un número ya existe (opcional)
-    boolean existsByNumero(String numero);
+    // Verificar si un número ya existe
+    boolean existsByToken(String numero);
 }
 

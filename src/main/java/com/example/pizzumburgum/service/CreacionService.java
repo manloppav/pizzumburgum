@@ -6,7 +6,6 @@ import com.example.pizzumburgum.repositorio.*;
 import com.example.pizzumburgum.entities.Producto;
 import com.example.pizzumburgum.entities.Usuario;
 import com.example.pizzumburgum.enums.CategoriaProducto;
-import com.example.pizzumburgum.rules.ReglasMinimas;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
