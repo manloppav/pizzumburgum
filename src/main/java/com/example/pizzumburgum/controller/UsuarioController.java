@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.DireccionDTO;
 import com.example.pizzumburgum.dto.request.TarjetaDTO;
