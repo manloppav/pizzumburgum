@@ -5,7 +5,7 @@ import com.example.pizzumburgum.dto.request.TarjetaDTO;
 import com.example.pizzumburgum.entities.Direccion;
 import com.example.pizzumburgum.entities.Tarjeta;
 import com.example.pizzumburgum.entities.Usuario;
-import com.example.pizzumburgum.repositorio.UsuarioRepositorio;
+import com.example.pizzumburgum.repository.UsuarioRepositorio;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

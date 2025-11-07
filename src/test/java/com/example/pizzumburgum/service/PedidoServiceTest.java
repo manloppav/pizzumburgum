@@ -2,7 +2,7 @@ package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
-import com.example.pizzumburgum.repositorio.*;
+import com.example.pizzumburgum.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
