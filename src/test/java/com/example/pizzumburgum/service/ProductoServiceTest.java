@@ -3,7 +3,7 @@ package com.example.pizzumburgum.service;
 import com.example.pizzumburgum.dto.request.ProductoPatchDTO;
 import com.example.pizzumburgum.entities.Producto;
 import com.example.pizzumburgum.enums.CategoriaProducto;
-import com.example.pizzumburgum.repositorio.ProductoRepositorio;
+import com.example.pizzumburgum.repository.ProductoRepositorio;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
