@@ -8,7 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -29,11 +30,11 @@ class ProductoServiceTest {
 
     @BeforeEach
     void setup() {
-        // Cuando se guarda, devolveme el mismo objeto (patrón común de unit test con mocks)
         lenient().when(productoRepositorio.save(any())).thenAnswer(inv -> inv.getArgument(0));
     }
 
-    /* ============ CREAR ============ */
+    /* =================== CREAR =================== */
+
     @Test
     void crearProducto_ok() {
         Producto p = baseProducto(null);
@@ -46,14 +47,14 @@ class ProductoServiceTest {
         Producto creado = productoService.crearProducto(p);
 
         assertThat(creado.getId()).isEqualTo(1L);
-        assertThat(creado.getNombre()).isEqualTo("Pizza Muzza");
+        assertThat(creado.getNombre()).isEqualTo("Masa Tradicional");
         verify(productoRepositorio).save(any(Producto.class));
     }
 
     @Test
     void crearProducto_precioInvalido_lanzaExcepcion() {
         Producto p = baseProducto(null);
-        p.setPrecio(new BigDecimal("0.0001")); // más de 2 decimales o < 0.01
+        p.setPrecio(new BigDecimal("0.0001"));
 
         assertThatThrownBy(() -> productoService.crearProducto(p))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -72,22 +73,23 @@ class ProductoServiceTest {
         verify(productoRepositorio, never()).save(any());
     }
 
-    /* ============ PATCH ============ */
+    /* =================== PATCH =================== */
+
     @Test
     void actualizarAtributos_ok() {
         Producto existente = baseProducto(5L);
         when(productoRepositorio.findById(5L)).thenReturn(Optional.of(existente));
 
         ProductoPatchDTO patch = new ProductoPatchDTO();
-        patch.setNombre("Pizza Muzza XL");
-        patch.setImagenUrl("https://cdn/muzza_xl.jpg");
-        patch.setCategoria(CategoriaProducto.PIZZA_BASE);
+        patch.setNombre("Masa Fina");
+        patch.setImagenUrl("https://cdn/masa_fina.jpg");
+        patch.setCategoria(CategoriaProducto.TIPO_MASA);
 
         Producto actualizado = productoService.actualizarAtributos(5L, patch);
 
-        assertThat(actualizado.getNombre()).isEqualTo("Pizza Muzza XL");
-        assertThat(actualizado.getImagenUrl()).isEqualTo("https://cdn/muzza_xl.jpg");
-        assertThat(actualizado.getCategoria()).isEqualTo(CategoriaProducto.PIZZA_BASE);
+        assertThat(actualizado.getNombre()).isEqualTo("Masa Fina");
+        assertThat(actualizado.getImagenUrl()).isEqualTo("https://cdn/masa_fina.jpg");
+        assertThat(actualizado.getCategoria()).isEqualTo(CategoriaProducto.TIPO_MASA);
         verify(productoRepositorio).save(any(Producto.class));
     }
 
@@ -106,7 +108,7 @@ class ProductoServiceTest {
         when(productoRepositorio.findById(7L)).thenReturn(Optional.of(existente));
 
         ProductoPatchDTO patch = new ProductoPatchDTO();
-        patch.setNombre("A"); // < 2 chars
+        patch.setNombre("A");
 
         assertThatThrownBy(() -> productoService.actualizarAtributos(7L, patch))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -114,7 +116,8 @@ class ProductoServiceTest {
         verify(productoRepositorio, never()).save(any());
     }
 
-    /* ============ PRECIO ============ */
+    /* =================== PRECIO =================== */
+
     @Test
     void actualizarPrecio_ok() {
         Producto existente = baseProducto(10L);
@@ -146,7 +149,8 @@ class ProductoServiceTest {
         verify(productoRepositorio, never()).save(any());
     }
 
-    /* ============ DESCRIPCIÓN ============ */
+    /* =================== DESCRIPCIÓN =================== */
+
     @Test
     void actualizarDescripcion_ok() {
         Producto existente = baseProducto(20L);
@@ -178,15 +182,15 @@ class ProductoServiceTest {
         verify(productoRepositorio, never()).save(any());
     }
 
-    /* ============ Helper ============ */
+    /* =================== Helper =================== */
     private Producto baseProducto(Long id) {
         Producto p = new Producto();
         p.setId(id);
-        p.setNombre("Pizza Muzza");
-        p.setDescripcion("Clásica muzzarella");
-        p.setPrecio(new BigDecimal("279.90"));
-        p.setCategoria(CategoriaProducto.PIZZA_BASE);
-        p.setImagenUrl("https://cdn/muzza.jpg");
+        p.setNombre("Masa Tradicional");
+        p.setDescripcion("Masa clásica italiana");
+        p.setPrecio(new BigDecimal("85.00"));
+        p.setCategoria(CategoriaProducto.TIPO_MASA);
+        p.setImagenUrl("https://cdn/masa_tradicional.jpg");
         return p;
     }
 }
