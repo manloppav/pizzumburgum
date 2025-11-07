@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.ProductoPatchDTO; // movelo si cambias el paquete
 import com.example.pizzumburgum.entities.Producto;

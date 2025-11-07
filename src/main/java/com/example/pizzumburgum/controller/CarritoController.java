@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CarritoOperacionDTO;
 import com.example.pizzumburgum.entities.Carrito;
