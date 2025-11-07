@@ -1,10 +1,6 @@
 package com.example.pizzumburgum.enums;
 
 public enum CategoriaProducto {
-    // BASES (elegís una u otra)
-    PIZZA_BASE,
-    HAMBURGUESA_BASE,
-
     // PIZZA
     TIPO_MASA,
     SALSA_PIZZA,
