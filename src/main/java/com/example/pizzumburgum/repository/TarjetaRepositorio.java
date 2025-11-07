@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.repository;
+package com.example.pizzumburgum.repositorio;
 
 import com.example.pizzumburgum.entities.Tarjeta;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +13,6 @@ public interface TarjetaRepositorio extends JpaRepository<Tarjeta, Long> {
     List<Tarjeta> findByUsuarioId(Long usuarioId);
 
     // Verificar si un número ya existe (opcional)
-    boolean existsByToken(String numero);
+    boolean existsByNumero(String numero);
 }
 
