@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CreacionRequestDTO;
 import com.example.pizzumburgum.entities.Creacion;
