@@ -2,7 +2,7 @@ package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.dto.request.ProductoPatchDTO;
 import com.example.pizzumburgum.entities.Producto;
-import com.example.pizzumburgum.repositorio.ProductoRepositorio;
+import com.example.pizzumburgum.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
