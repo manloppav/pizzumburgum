@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CreacionDTO;
 import com.example.pizzumburgum.dto.request.CreacionRequestDTO;
@@ -29,7 +29,9 @@ public class CreacionController {
         this.creacionService = creacionService;
     }
 
-    /** ================== Crear una creación ================== */
+    /**
+     * ================== Crear una creación ==================
+     */
     @PostMapping
     public ResponseEntity<Creacion> crear(@RequestBody @Valid CreacionRequestDTO dto) {
         Creacion creada = creacionService.crearCreacion(
@@ -47,7 +49,9 @@ public class CreacionController {
         return ResponseEntity.created(location).body(creada);
     }
 
-    /** ================== Obtener una creación por ID ================== */
+    /**
+     * ================== Obtener una creación por ID ==================
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Creacion> obtenerPorId(@PathVariable Long id) {
         return creacionService.buscarPorId(id)
