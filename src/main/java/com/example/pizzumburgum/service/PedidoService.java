@@ -108,7 +108,7 @@ public class PedidoService {
         if (!pedido.getUsuario().getId().equals(usuarioId)) {
             throw new IllegalArgumentException("El pedido no pertenece al usuario");
         }
-        if (pedido.getEstado() == EstadoPedido.ENTREGADO || pedido.getEstado() == EstadoPedido.EN_CAMINO ||  pedido.getEstado() == EstadoPedido.PREPARACION) {
+        if (pedido.getEstado() == EstadoPedido.ENTREGADO || pedido.getEstado() == EstadoPedido.EN_CAMINO || pedido.getEstado() == EstadoPedido.PREPARACION) {
             throw new IllegalStateException("El pedido no es editable en estado " + pedido.getEstado());
         }
 
@@ -194,7 +194,7 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
-    // ============= MÉTODO AUXILIAR =============
+    // ============= METODO AUXILIAR =============
 
     private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
