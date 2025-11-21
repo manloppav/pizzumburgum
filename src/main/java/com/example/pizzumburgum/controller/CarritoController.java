@@ -1,11 +1,9 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CarritoOperacionDTO;
 import com.example.pizzumburgum.entities.Carrito;
 import com.example.pizzumburgum.service.CarritoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +20,9 @@ public class CarritoController {
         this.carritoService = carritoService;
     }
 
-    /** ================== Productos sueltos ================== */
+    /**
+     * ================== Productos sueltos ==================
+     */
 
     // Agregar producto suelto al carrito
     @PostMapping("/productos/{productoId}")
@@ -35,7 +35,9 @@ public class CarritoController {
         return ResponseEntity.ok(resp);
     }
 
-    /** ================== Creaciones (pizzas/hamburguesas) ================== */
+    /**
+     * ================== Creaciones (pizzas/hamburguesas) ==================
+     */
 
     // Agregar creación al carrito
     @PostMapping("/creaciones/{creacionId}")
@@ -48,7 +50,9 @@ public class CarritoController {
         return ResponseEntity.ok(resp);
     }
 
-    /** ================== Items existentes ================== */
+    /**
+     * ================== Items existentes ==================
+     */
 
     // Actualizar cantidad de un item del carrito (por id del item)
     @PutMapping("/items/{carritoItemId}")
@@ -62,7 +66,9 @@ public class CarritoController {
         return ResponseEntity.ok(resp);
     }
 
-    /** ================== Manejo de errores simples ================== */
+    /**
+     * ================== Manejo de errores simples ==================
+     */
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {

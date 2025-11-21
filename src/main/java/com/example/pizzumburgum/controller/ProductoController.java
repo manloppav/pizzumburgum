@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.web;
+package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.ProductoPatchDTO; // movelo si cambias el paquete
 import com.example.pizzumburgum.entities.Producto;
@@ -151,7 +151,7 @@ public class ProductoController {
         return ResponseEntity.badRequest().body(resp);
     }
 
-    @ExceptionHandler({ MethodArgumentNotValidException.class, BindException.class })
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<Map<String, Object>> handleValidation(Exception ex) {
         Map<String, Object> resp = new LinkedHashMap<>();
         resp.put("status", 400);

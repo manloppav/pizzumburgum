@@ -34,7 +34,6 @@ public class Creacion {
     @Column(length = 500)
     private String imagenUrl;
 
-    /** PIZZA o HAMBURGUESA: define qué categorías de producto están permitidas. */
     @NotNull(message = "La categoría de la creación es obligatoria")
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria_creacion", nullable = false, length = 20)

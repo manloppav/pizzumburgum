@@ -1,14 +1,22 @@
 package com.example.pizzumburgum.service;
 
+import com.example.pizzumburgum.dto.request.PedidoItemDTO;
+import com.example.pizzumburgum.dto.request.PedidoDTO;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.enums.EstadoPedido;
+import com.example.pizzumburgum.exception.RegistroException;
 import com.example.pizzumburgum.repository.*;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -100,7 +108,7 @@ public class PedidoService {
         if (!pedido.getUsuario().getId().equals(usuarioId)) {
             throw new IllegalArgumentException("El pedido no pertenece al usuario");
         }
-        if (pedido.getEstado() == EstadoPedido.ENTREGADO || pedido.getEstado() == EstadoPedido.EN_CAMINO ||  pedido.getEstado() == EstadoPedido.PREPARACION) {
+        if (pedido.getEstado() == EstadoPedido.ENTREGADO || pedido.getEstado() == EstadoPedido.EN_CAMINO || pedido.getEstado() == EstadoPedido.PREPARACION) {
             throw new IllegalStateException("El pedido no es editable en estado " + pedido.getEstado());
         }
 
@@ -108,5 +116,127 @@ public class PedidoService {
         if (nuevaDireccion != null) pedido.setDireccionEntrega(nuevaDireccion);
 
         return pedidoRepositorio.save(pedido);
+    }
+
+    // ============= MÉTODOS PARA ADMIN =============
+
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarPedidosPorFecha(LocalDate fecha) {
+        List<Pedido> pedidos = pedidoRepositorio.findByFecha(fecha);
+        return pedidos.stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarPedidosPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        LocalDateTime inicio = fechaInicio.atStartOfDay();
+        LocalDateTime fin = fechaFin.atTime(LocalTime.MAX);
+
+        List<Pedido> pedidos = pedidoRepositorio.findByFechaRange(inicio, fin);
+        return pedidos.stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarTodosPedidos() {
+        List<Pedido> pedidos = pedidoRepositorio.findAllByOrderByFechaHoraDesc();
+        return pedidos.stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PedidoDTO obtenerPedidoPorId(Long id, Long usuarioId, String rol) {
+        Pedido pedido = pedidoRepositorio.findById(id)
+                .orElseThrow(() -> new RegistroException("Pedido no encontrado"));
+
+        // Si no es admin, verificar que el pedido pertenezca al usuario
+        if (!"ADMIN".equals(rol) && !pedido.getUsuario().getId().equals(usuarioId)) {
+            throw new RegistroException("No tienes permiso para ver este pedido");
+        }
+
+        return convertirAPedidoDTO(pedido);
+    }
+
+    @Transactional
+    public PedidoDTO cambiarEstadoPedido(Long id, EstadoPedido nuevoEstado) {
+        Pedido pedido = pedidoRepositorio.findById(id)
+                .orElseThrow(() -> new RegistroException("Pedido no encontrado"));
+
+        pedido.setEstado(nuevoEstado);
+        Pedido pedidoActualizado = pedidoRepositorio.save(pedido);
+
+        return convertirAPedidoDTO(pedidoActualizado);
+    }
+
+    @Transactional(readOnly = true)
+    public Long contarPedidosPorFecha(LocalDate fecha) {
+        return pedidoRepositorio.countByFecha(fecha);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarPedidosPorEstado(EstadoPedido estado) {
+        List<Pedido> pedidos = pedidoRepositorio.findByEstadoOrderByFechaHoraDesc(estado);
+        return pedidos.stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ============= MÉTODOS PARA CLIENTES =============
+
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarPedidosDeUsuario(Long usuarioId) {
+        List<Pedido> pedidos = pedidoRepositorio.findByUsuarioIdOrderByFechaHoraDesc(usuarioId);
+        return pedidos.stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ============= METODO AUXILIAR =============
+
+    private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
+        PedidoDTO dto = new PedidoDTO();
+        dto.setId(pedido.getId());
+        dto.setFechaHora(pedido.getFechaHora());
+        dto.setEstado(pedido.getEstado());
+        dto.setPrecioTotal(pedido.getPrecioTotal());
+        dto.setObservaciones(pedido.getObservaciones());
+        dto.setDireccionEntrega(pedido.getDireccionEntrega());
+        dto.setNombreCliente(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido());
+        dto.setEmailCliente(pedido.getUsuario().getEmail());
+
+        // Convertir items
+        if (pedido.getItems() != null && !pedido.getItems().isEmpty()) {
+            List<PedidoItemDTO> itemsDTO = pedido.getItems().stream()
+                    .map(this::convertirAItemDTO)
+                    .collect(Collectors.toList());
+            dto.setItems(itemsDTO);
+        }
+
+        return dto;
+    }
+
+    private PedidoItemDTO convertirAItemDTO(PedidoItem item) {
+        PedidoItemDTO dto = new PedidoItemDTO();
+        dto.setId(item.getId());
+        dto.setCantidad(item.getCantidad());
+        dto.setSubtotal(item.getSubtotal());
+
+        if (item.getProducto() != null) {
+            dto.setNombreItem(item.getProducto().getNombre());
+            dto.setTipo("PRODUCTO");
+            dto.setProductoId(item.getProducto().getId());
+        } else if (item.getCreacion() != null) {
+            dto.setNombreItem(item.getCreacion().getNombre());
+            dto.setTipo("CREACIÓN");
+            dto.setCreacionId(item.getCreacion().getId());
+        } else {
+            dto.setNombreItem("Sin nombre");
+            dto.setTipo("DESCONOCIDO");
+        }
+
+        return dto;
     }
 }
