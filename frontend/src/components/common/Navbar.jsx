@@ -18,30 +18,62 @@ export const Navbar = () => {
         <BSNavbar.Brand as={Link} to="/">
           PizzumBurgum
         </BSNavbar.Brand>
+
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
         <BSNavbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
+
             {isAuthenticated ? (
               <>
+                {/* SOLO PARA USUARIOS LOGUEADOS */}
                 <Nav.Link as={Link} to="/dashboard">
                   Dashboard
                 </Nav.Link>
+
+                {/* SOLO ADMIN */}
                 {user?.rol === 'ADMIN' && (
-                  <Nav.Link as={Link} to="/admin">
-                    Panel Admin
-                  </Nav.Link>
+                  <>
+                    <Nav.Link as={Link} to="/admin">
+                      Panel Admin
+                    </Nav.Link>
+
+                    <Nav.Link as={Link} to="/admin/pedidos">
+                      <i className="bi bi-clipboard-data me-1"></i>
+                      Gestión de Pedidos
+                    </Nav.Link>
+                  </>
                 )}
+
+                {/* SOLO CLIENTE */}
+                {user?.rol === 'CLIENTE' && (
+                  <>
+                    <Nav.Link as={Link} to="/mis-pedidos">
+                      <i className="bi bi-bag-check me-1"></i>
+                      Mis Pedidos
+                    </Nav.Link>
+                  </>
+                )}
+
+                {/* PARA TODOS LOS USUARIOS AUTENTICADOS */}
+
+                {/* NOMBRE + CERRAR SESIÓN */}
                 <Nav.Item className="d-flex align-items-center ms-3">
                   <span className="text-light me-3">
                     Hola, {user?.nombre}
                   </span>
-                  <Button variant="outline-light" size="sm" onClick={handleLogout}>
+                  <Button
+                    variant="outline-light"
+                    size="sm"
+                    onClick={handleLogout}
+                  >
                     Cerrar Sesión
                   </Button>
                 </Nav.Item>
+
               </>
             ) : (
               <>
+                {/* SI NO ESTÁ AUTENTICADO */}
                 <Nav.Link as={Link} to="/login">
                   Iniciar Sesión
                 </Nav.Link>
@@ -50,6 +82,7 @@ export const Navbar = () => {
                 </Nav.Link>
               </>
             )}
+
           </Nav>
         </BSNavbar.Collapse>
       </Container>

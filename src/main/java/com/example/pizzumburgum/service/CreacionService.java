@@ -1,10 +1,13 @@
 package com.example.pizzumburgum.service;
 
+import com.example.pizzumburgum.dto.request.CreacionDTO;
+import com.example.pizzumburgum.dto.request.ProductoSimpleDTO;
 import com.example.pizzumburgum.entities.Creacion;
 import com.example.pizzumburgum.entities.Producto;
 import com.example.pizzumburgum.entities.Usuario;
 import com.example.pizzumburgum.enums.CategoriaCreacion;
 import com.example.pizzumburgum.enums.CategoriaProducto;
+import com.example.pizzumburgum.exception.RegistroException;
 import com.example.pizzumburgum.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -109,5 +112,47 @@ public class CreacionService {
         creacion.setNombre(nombreDef);
 
         return creacionRepositorio.save(creacion);
+    }
+
+    @Transactional(readOnly = true)
+    public CreacionDTO obtenerCreacionConDetalles(Long id) {
+        Creacion creacion = creacionRepositorio.findByIdWithProductos(id)
+                .orElseThrow(() -> new RegistroException("Creación no encontrada"));
+
+        return convertirACreacionDTO(creacion);
+    }
+
+    private CreacionDTO convertirACreacionDTO(Creacion creacion) {
+        CreacionDTO dto = new CreacionDTO();
+        dto.setId(creacion.getId());
+        dto.setNombre(creacion.getNombre());
+        dto.setDescripcion(creacion.getDescripcion());
+        dto.setImagenUrl(creacion.getImagenUrl());
+        dto.setCategoriaCreacion(creacion.getCategoriaCreacion());
+        dto.setPrecioTotal(creacion.getPrecioTotal());
+
+        if (creacion.getUsuario() != null) {
+            dto.setNombreUsuario(creacion.getUsuario().getNombre() + " " + creacion.getUsuario().getApellido());
+        }
+
+        if (creacion.getProductos() != null && !creacion.getProductos().isEmpty()) {
+            dto.setProductos(
+                    creacion.getProductos().stream()
+                            .map(this::convertirAProductoSimpleDTO)
+                            .collect(Collectors.toList())
+            );
+        }
+
+        return dto;
+    }
+
+    private ProductoSimpleDTO convertirAProductoSimpleDTO(Producto producto) {
+        ProductoSimpleDTO dto = new ProductoSimpleDTO();
+        dto.setId(producto.getId());
+        dto.setNombre(producto.getNombre());
+        dto.setDescripcion(producto.getDescripcion());
+        dto.setPrecio(producto.getPrecio());
+        dto.setCategoria(producto.getCategoria());
+        return dto;
     }
 }

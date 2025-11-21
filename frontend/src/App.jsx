@@ -7,6 +7,8 @@ import { PrivateRoute } from './components/auth/PrivateRoute';
 import { Navbar } from './components/common/Navbar';
 import { AdminPanel } from './components/admin/AdminPanel';
 import { Container, Card } from 'react-bootstrap';
+import { ListarPedidos } from './components/admin/ListarPedidos';
+import { MisPedidos } from './components/cliente/MisPedidos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Dashboard() {
@@ -43,6 +45,22 @@ function App() {
             element={
               <PrivateRoute adminOnly>
                 <AdminPanel />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/pedidos"
+            element={
+              <PrivateRoute adminOnly>
+                <ListarPedidos />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mis-pedidos"
+            element={
+              <PrivateRoute>
+                <MisPedidos />
               </PrivateRoute>
             }
           />

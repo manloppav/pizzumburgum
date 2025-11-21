@@ -1,5 +1,6 @@
 package com.example.pizzumburgum.web;
 
+import com.example.pizzumburgum.dto.request.CreacionDTO;
 import com.example.pizzumburgum.dto.request.CreacionRequestDTO;
 import com.example.pizzumburgum.entities.Creacion;
 import com.example.pizzumburgum.service.CreacionService;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/creaciones")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class CreacionController {
 
     private final CreacionService creacionService;
@@ -89,4 +92,12 @@ public class CreacionController {
         body.put("message", "JSON inválido o malformado");
         return ResponseEntity.badRequest().body(body);
     }
+
+    @GetMapping("/{id}/detallada")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<CreacionDTO> obtenerCreacion(@PathVariable Long id) {
+        CreacionDTO creacion = creacionService.obtenerCreacionConDetalles(id);
+        return ResponseEntity.ok(creacion);
+    }
+
 }
