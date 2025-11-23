@@ -55,4 +55,11 @@ public class Pedido {
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private Pago pago;
+
+    public void setPago(Pago pago) {
+        this.pago = pago;
+        if (pago != null) {
+            pago.setPedido(this);   // actualizo del otro lado
+        }
+    }
 }
