@@ -9,6 +9,7 @@ import { AdminPanel } from './components/admin/AdminPanel';
 import { Container, Card } from 'react-bootstrap';
 import { ListarPedidos } from './components/admin/ListarPedidos';
 import { MisPedidos } from './components/cliente/MisPedidos';
+import { GestionProductos } from './components/admin/GestionProductos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Dashboard() {
@@ -53,6 +54,14 @@ function App() {
             element={
               <PrivateRoute adminOnly>
                 <ListarPedidos />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/productos"
+            element={
+              <PrivateRoute adminOnly>
+                <GestionProductos />
               </PrivateRoute>
             }
           />

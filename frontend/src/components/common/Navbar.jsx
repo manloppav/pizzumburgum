@@ -34,12 +34,16 @@ export const Navbar = () => {
                 {user?.rol === 'ADMIN' && (
                   <>
                     <Nav.Link as={Link} to="/admin">
+                      <i className="bi bi-gear-fill me-1"></i>
                       Panel Admin
                     </Nav.Link>
-
+                    <Nav.Link as={Link} to="/admin/productos">
+                      <i className="bi bi-box-seam me-1"></i>
+                      Productos
+                    </Nav.Link>
                     <Nav.Link as={Link} to="/admin/pedidos">
                       <i className="bi bi-clipboard-data me-1"></i>
-                      Gestión de Pedidos
+                      Pedidos
                     </Nav.Link>
                   </>
                 )}
