@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/registro", "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/registro-admin").hasRole("ADMIN")
                         .requestMatchers("/api/pedidos/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/productos/**").hasRole("ADMIN")
                         .requestMatchers("/api/pedidos/mis-pedidos", "/api/pedidos/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/creaciones/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .anyRequest().authenticated()

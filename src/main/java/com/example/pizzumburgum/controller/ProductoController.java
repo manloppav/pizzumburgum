@@ -3,9 +3,11 @@ package com.example.pizzumburgum.controller;
 import com.example.pizzumburgum.dto.request.ProductoPatchDTO; // movelo si cambias el paquete
 import com.example.pizzumburgum.entities.Producto;
 import com.example.pizzumburgum.enums.CategoriaProducto;
+import com.example.pizzumburgum.repository.ProductoRepositorio;
 import com.example.pizzumburgum.service.ProductoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,9 @@ import java.util.*;
 public class ProductoController {
 
     private final ProductoService productoService;
+
+    @Autowired
+    private ProductoRepositorio productoRepositorio;
 
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
@@ -77,6 +82,12 @@ public class ProductoController {
         return productoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Producto>> listarTodos() {
+        List<Producto> productos = productoRepositorio.findAll();
+        return ResponseEntity.ok(productos);
     }
 
     /* ============== PATCH parcial (nombre/imagenUrl/categoria) ============== */
