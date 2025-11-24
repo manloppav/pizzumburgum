@@ -2,7 +2,7 @@ package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.dto.bps.BpsUsuariosSistemaResponse;
 import com.example.pizzumburgum.enums.RolUsuario;
-import com.example.pizzumburgum.repositorio.UsuarioRepositorio;
+import com.example.pizzumburgum.repository.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
