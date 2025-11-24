@@ -10,6 +10,8 @@ import { Container, Card } from 'react-bootstrap';
 import { ListarPedidos } from './components/admin/ListarPedidos';
 import { MisPedidos } from './components/cliente/MisPedidos';
 import { GestionProductos } from './components/admin/GestionProductos';
+import { CrearCreacion } from './components/cliente/CrearCreacion';
+import { MisCreaciones } from './components/cliente/MisCreaciones';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Dashboard() {
@@ -70,6 +72,22 @@ function App() {
             element={
               <PrivateRoute>
                 <MisPedidos />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/crear-creacion"
+            element={
+              <PrivateRoute>
+                <CrearCreacion />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mis-creaciones"
+            element={
+              <PrivateRoute>
+                <MisCreaciones />
               </PrivateRoute>
             }
           />

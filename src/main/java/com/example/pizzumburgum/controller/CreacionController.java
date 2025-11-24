@@ -3,6 +3,7 @@ package com.example.pizzumburgum.controller;
 import com.example.pizzumburgum.dto.request.CreacionDTO;
 import com.example.pizzumburgum.dto.request.CreacionRequestDTO;
 import com.example.pizzumburgum.entities.Creacion;
+import com.example.pizzumburgum.security.CustomUserDetails;
 import com.example.pizzumburgum.service.CreacionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +36,13 @@ public class CreacionController {
      * ================== Crear una creación ==================
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
     public ResponseEntity<Creacion> crear(@RequestBody @Valid CreacionRequestDTO dto) {
         Creacion creada = creacionService.crearCreacion(
                 dto.getUsuarioId(),
+                dto.getNombre(),
+                dto.getDescripcion(),
+                dto.getImagenUrl(),
                 dto.getCategoriaCreacion(),
                 dto.getProductoIds()
         );
@@ -102,6 +109,16 @@ public class CreacionController {
     public ResponseEntity<CreacionDTO> obtenerCreacion(@PathVariable Long id) {
         CreacionDTO creacion = creacionService.obtenerCreacionConDetalles(id);
         return ResponseEntity.ok(creacion);
+    }
+
+    @GetMapping("/mis-creaciones")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<List<CreacionDTO>> listarMisCreaciones() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        List<CreacionDTO> creaciones = creacionService.listarCreacionesDeUsuario(userDetails.getId());
+        return ResponseEntity.ok(creaciones);
     }
 
 }

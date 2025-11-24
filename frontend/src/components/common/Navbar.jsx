@@ -55,6 +55,14 @@ export const Navbar = () => {
                       <i className="bi bi-bag-check me-1"></i>
                       Mis Pedidos
                     </Nav.Link>
+                    <Nav.Link as={Link} to="/crear-creacion">
+                      <i className="bi bi-plus-circle me-1"></i>
+                      Nueva Creación
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/mis-creaciones">
+                      <i className="bi bi-star me-1"></i>
+                      Mis Creaciones
+                    </Nav.Link>
                   </>
                 )}
 

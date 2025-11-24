@@ -5,6 +5,7 @@ import com.example.pizzumburgum.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -42,7 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/registro", "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/registro-admin").hasRole("ADMIN")
                         .requestMatchers("/api/pedidos/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/productos/**").hasRole("ADMIN")
+                        .requestMatchers("/api/creaciones/**").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/pedidos/mis-pedidos", "/api/pedidos/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/creaciones/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .anyRequest().authenticated()
