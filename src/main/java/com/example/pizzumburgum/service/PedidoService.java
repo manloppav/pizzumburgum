@@ -3,6 +3,7 @@ package com.example.pizzumburgum.service;
 import com.example.pizzumburgum.dto.request.PedidoItemDTO;
 import com.example.pizzumburgum.dto.request.PedidoDTO;
 import com.example.pizzumburgum.entities.*;
+import com.example.pizzumburgum.enums.EstadoPago;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.exception.RegistroException;
 import com.example.pizzumburgum.repository.*;
@@ -48,7 +49,7 @@ public class PedidoService {
             throw new IllegalArgumentException("La tarjeta no pertenece al usuario");
         }
 
-        // Total (snapshot)
+        // Total
         BigDecimal total = carrito.getItems().stream()
                 .map(CarritoItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
@@ -57,7 +58,7 @@ public class PedidoService {
             throw new IllegalArgumentException("El total del pedido debe ser mayor a 0");
         }
 
-        // Pago simplificado: siempre aprobado (sin beans, sin pasarelas)
+        // Código de autorización simulado
         String codigoAutorizacion = "AUTH-LOCAL";
 
         // Construir Pedido en PENDIENTE
@@ -82,15 +83,18 @@ public class PedidoService {
             pedido.getItems().add(pi);
         }
 
-        pedido = pedidoRepositorio.save(pedido);
 
         // Registrar pago
         Pago pago = new Pago();
-        pago.setPedido(pedido);
         pago.setTarjeta(tarjeta);
         pago.setMonto(total);
         pago.setCodigoAutorizacion(codigoAutorizacion);
-        pagoRepositorio.save(pago);
+        pago.setEstado(EstadoPago.APROBADO);
+
+        pedido.setPago(pago);
+
+        // Guardar pedido (cascade guarda items y pago)
+        pedido = pedidoRepositorio.save(pedido);
 
         // Vaciar carrito
         carrito.getItems().clear();
@@ -196,7 +200,7 @@ public class PedidoService {
 
     // ============= METODO AUXILIAR =============
 
-    private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
+    public PedidoDTO convertirAPedidoDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
         dto.setId(pedido.getId());
         dto.setFechaHora(pedido.getFechaHora());
@@ -218,7 +222,7 @@ public class PedidoService {
         return dto;
     }
 
-    private PedidoItemDTO convertirAItemDTO(PedidoItem item) {
+    public PedidoItemDTO convertirAItemDTO(PedidoItem item) {
         PedidoItemDTO dto = new PedidoItemDTO();
         dto.setId(item.getId());
         dto.setCantidad(item.getCantidad());
