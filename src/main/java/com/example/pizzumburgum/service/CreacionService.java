@@ -30,6 +30,9 @@ public class CreacionService {
 
     @Transactional
     public Creacion crearCreacion(Long usuarioId,
+                                  String nombre,
+                                  String descripcion,
+                                  String imagenUrl,
                                   CategoriaCreacion categoriaCreacion,
                                   List<Long> productoIds) {
 
@@ -104,12 +107,16 @@ public class CreacionService {
         creacion.setUsuario(usuario);
         creacion.setProductos(productos);
         creacion.setCategoriaCreacion(categoriaCreacion);
+        creacion.setNombre(nombre != null && !nombre.trim().isEmpty() ? nombre.trim() :
+                (categoriaCreacion == CategoriaCreacion.PIZZA_BASE ? "Pizza personalizada" : "Hamburguesa personalizada"));
 
-        // nombre es obligatorio en la entidad -> autogenerar si no viene por otro flujo
-        String nombreDef = (categoriaCreacion == CategoriaCreacion.PIZZA_BASE)
-                ? "Pizza personalizada"
-                : "Hamburguesa personalizada";
-        creacion.setNombre(nombreDef);
+        if (descripcion != null && !descripcion.trim().isEmpty()) {
+            creacion.setDescripcion(descripcion.trim());
+        }
+
+        if (imagenUrl != null && !imagenUrl.trim().isEmpty()) {
+            creacion.setImagenUrl(imagenUrl.trim());
+        }
 
         return creacionRepositorio.save(creacion);
     }
@@ -120,6 +127,14 @@ public class CreacionService {
                 .orElseThrow(() -> new RegistroException("Creación no encontrada"));
 
         return convertirACreacionDTO(creacion);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CreacionDTO> listarCreacionesDeUsuario(Long usuarioId) {
+        List<Creacion> creaciones = creacionRepositorio.findByUsuarioIdOrderByIdDesc(usuarioId);
+        return creaciones.stream()
+                .map(this::convertirACreacionDTO)
+                .collect(Collectors.toList());
     }
 
     private CreacionDTO convertirACreacionDTO(Creacion creacion) {
