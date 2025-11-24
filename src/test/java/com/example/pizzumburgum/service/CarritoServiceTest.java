@@ -1,7 +1,10 @@
 package com.example.pizzumburgum.service;
 
 import com.example.pizzumburgum.entities.*;
-import com.example.pizzumburgum.repositorio.*;
+import com.example.pizzumburgum.repository.CarritoRepositorio;
+import com.example.pizzumburgum.repository.CreacionRepositorio;
+import com.example.pizzumburgum.repository.ProductoRepositorio;
+import com.example.pizzumburgum.repository.UsuarioRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -23,5 +23,4 @@ public class AuthResponseDTO {
         this.email = email;
         this.rol = rol;
     }
-
 }

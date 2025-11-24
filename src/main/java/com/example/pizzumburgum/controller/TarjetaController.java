@@ -1,7 +1,7 @@
 package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.entities.Tarjeta;
-import com.example.pizzumburgum.repositorio.TarjetaRepositorio;
+import com.example.pizzumburgum.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

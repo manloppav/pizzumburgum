@@ -1,4 +1,4 @@
-package com.example.pizzumburgum.repositorio;
+package com.example.pizzumburgum.repository;
 
 import com.example.pizzumburgum.entities.Carrito;
 import org.springframework.data.jpa.repository.JpaRepository;

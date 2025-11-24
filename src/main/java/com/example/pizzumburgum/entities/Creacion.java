@@ -1,5 +1,6 @@
 package com.example.pizzumburgum.entities;
 
+import com.example.pizzumburgum.enums.CategoriaCreacion;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -33,8 +34,17 @@ public class Creacion {
     @Column(length = 500)
     private String imagenUrl;
 
+    @NotNull(message = "La categoría de la creación es obligatoria")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "categoria_creacion", nullable = false, length = 20)
+    private CategoriaCreacion categoriaCreacion;
+
     @ManyToMany
-    @JoinTable(name = "creacion_productos", joinColumns = @JoinColumn(name = "creacion_id"), inverseJoinColumns = @JoinColumn(name = "producto_id"))
+    @JoinTable(
+            name = "creacion_productos",
+            joinColumns = @JoinColumn(name = "creacion_id"),
+            inverseJoinColumns = @JoinColumn(name = "producto_id")
+    )
     private List<Producto> productos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,16 +57,12 @@ public class Creacion {
 
     @Transient
     public BigDecimal getPrecioTotal() {
-        // Si el precio fue seteado manualmente (por test o snapshot), usar ese
         if (precioTotal != null)
             return precioTotal.setScale(2, RoundingMode.HALF_UP);
 
-        // Si no, calcular en base a los productos asociados
-        return productos == null
-                ? BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP)
-                : productos.stream()
+        return (productos == null ? BigDecimal.ZERO : productos.stream()
                 .map(Producto::getPrecio)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .reduce(BigDecimal.ZERO, BigDecimal::add))
                 .setScale(2, RoundingMode.HALF_UP);
     }
 }
