@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/registro", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/external/dgi/**", "/api/external/bps/**").permitAll()
                         .requestMatchers("/api/auth/registro-admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
