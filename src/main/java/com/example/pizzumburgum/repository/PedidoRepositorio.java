@@ -36,7 +36,7 @@ public interface PedidoRepositorio extends JpaRepository<Pedido, Long> {
     List<Pedido> findAllByOrderByFechaHoraDesc();
 
 
-    ///  Nuebas consultas para DGI  ///
+    ///  Nuevas consultas para DGI  ///
     // IDs de pedidos con pago en un rango de fecha/hora (día completo)
     @Query("""
            select p.id

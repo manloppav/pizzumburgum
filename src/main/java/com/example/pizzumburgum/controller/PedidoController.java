@@ -1,9 +1,11 @@
 package com.example.pizzumburgum.controller;
 
+import com.example.pizzumburgum.dto.request.PedidoCrearRequestDTO;
 import com.example.pizzumburgum.dto.request.PedidoDTO;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.security.CustomUserDetails;
 import com.example.pizzumburgum.service.PedidoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -98,5 +100,25 @@ public class PedidoController {
         PedidoDTO pedido = pedidoService.obtenerPedidoPorId(id, userDetails.getId(), userDetails.getRol());
         return ResponseEntity.ok(pedido);
     }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<PedidoDTO> crearPedido(@RequestBody @Valid PedidoCrearRequestDTO body) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long usuarioId = userDetails.getId();
+
+        var pedido = pedidoService.crearPedido(
+                usuarioId,
+                body.getTarjetaId(),
+                body.getNota(),
+                body.getDireccionEntrega()
+        );
+
+        PedidoDTO dto = pedidoService.convertirAPedidoDTO(pedido);
+
+        return ResponseEntity.status(201).body(dto);
+    }
+
 
 }

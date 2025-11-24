@@ -200,7 +200,7 @@ public class PedidoService {
 
     // ============= METODO AUXILIAR =============
 
-    private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
+    public PedidoDTO convertirAPedidoDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
         dto.setId(pedido.getId());
         dto.setFechaHora(pedido.getFechaHora());
@@ -222,7 +222,7 @@ public class PedidoService {
         return dto;
     }
 
-    private PedidoItemDTO convertirAItemDTO(PedidoItem item) {
+    public PedidoItemDTO convertirAItemDTO(PedidoItem item) {
         PedidoItemDTO dto = new PedidoItemDTO();
         dto.setId(item.getId());
         dto.setCantidad(item.getCantidad());
