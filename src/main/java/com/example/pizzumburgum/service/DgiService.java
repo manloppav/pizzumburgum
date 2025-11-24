@@ -5,7 +5,7 @@ import com.example.pizzumburgum.dto.dgi.DgiTicketDTO;
 import com.example.pizzumburgum.dto.dgi.DgiTicketItemDTO;
 import com.example.pizzumburgum.dto.dgi.DgiTicketsResponse;
 import com.example.pizzumburgum.entities.Pedido;
-import com.example.pizzumburgum.repositorio.PedidoRepositorio;
+import com.example.pizzumburgum.repository.PedidoRepositorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
