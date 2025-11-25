@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, ListGroup, Badge, Alert, Modal, Form, Spinner } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  ListGroup,
+  Badge,
+  Alert,
+  Modal,
+  Form,
+  Spinner
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { carritoService } from '../../services/carritoService';
@@ -10,6 +22,7 @@ import { direccionService } from '../../services/direccionService';
 export const Carrito = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const [carrito, setCarrito] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,7 +47,7 @@ export const Carrito = () => {
   const cargarCarrito = async () => {
     try {
       setLoading(true);
-      const data = await carritoService.obtenerCarrito(user.id);
+      const data = await carritoService.obtenerCarrito(user.id); // debe devolver CarritoDTO
       setCarrito(data);
     } catch (err) {
       setError('Error al cargar el carrito');
@@ -45,38 +58,44 @@ export const Carrito = () => {
   };
 
   const cargarDatosParaPedido = async () => {
-      try {
-        // 🔥 FIX: ahora pasamos user.id para evitar "undefined"
-        const [tarjetasData, direccionesData] = await Promise.all([
-          tarjetaService.listarMisTarjetas(user.id),
-          direccionService.listarMisDirecciones(user.id)
-        ]);
+    try {
+      const [tarjetasData, direccionesData] = await Promise.all([
+        tarjetaService.listarMisTarjetas(user.id),
+        direccionService.listarMisDirecciones(user.id)
+      ]);
 
-        setTarjetas(tarjetasData);
-        setDirecciones(direccionesData);
+      setTarjetas(tarjetasData);
+      setDirecciones(direccionesData);
 
-        const tarjetaPrincipal = tarjetasData.find(t => t.principal);
-        const direccionPrincipal = direccionesData.find(d => d.principal);
+      const tarjetaPrincipal = tarjetasData.find((t) => t.principal);
+      const direccionPrincipal = direccionesData.find((d) => d.principal);
 
-        setPedidoData({
-          tarjetaId: tarjetaPrincipal?.id || '',
-          direccionEntrega: direccionPrincipal ?
-            `${direccionPrincipal.calle} ${direccionPrincipal.numero}, ${direccionPrincipal.barrio}` : '',
-          observaciones: ''
-        });
-      } catch (err) {
-        setError('Error al cargar datos de pago y entrega');
-      }
-    };
+      setPedidoData({
+        tarjetaId: tarjetaPrincipal?.id || '',
+        direccionEntrega: direccionPrincipal
+          ? `${direccionPrincipal.calle} ${direccionPrincipal.numero}, ${direccionPrincipal.barrio}`
+          : '',
+        observaciones: ''
+      });
+    } catch (err) {
+      setError('Error al cargar datos de pago y entrega');
+      console.error(err);
+    }
+  };
 
   const actualizarCantidad = async (itemId, nuevaCantidad) => {
     if (nuevaCantidad < 1) return;
 
     try {
-      const carritoActualizado = await carritoService.actualizarCantidad(itemId, user.id, nuevaCantidad);
+      const carritoActualizado = await carritoService.actualizarCantidad(
+        itemId,
+        user.id,
+        nuevaCantidad
+      );
       setCarrito(carritoActualizado);
     } catch (err) {
       setError('Error al actualizar cantidad');
+      console.error(err);
     }
   };
 
@@ -88,6 +107,7 @@ export const Carrito = () => {
       setTimeout(() => setSuccess(''), 2000);
     } catch (err) {
       setError('Error al eliminar item');
+      console.error(err);
     }
   };
 
@@ -101,6 +121,7 @@ export const Carrito = () => {
       setTimeout(() => setSuccess(''), 2000);
     } catch (err) {
       setError('Error al vaciar carrito');
+      console.error(err);
     }
   };
 
@@ -137,9 +158,9 @@ export const Carrito = () => {
       setTimeout(() => {
         navigate('/mis-pedidos');
       }, 1500);
-
     } catch (err) {
       setError(err.response?.data || 'Error al crear el pedido');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -205,78 +226,95 @@ export const Carrito = () => {
                   <i className="bi bi-cart-x" style={{ fontSize: '4rem' }}></i>
                   <h4 className="mt-3">Tu carrito está vacío</h4>
                   <p className="text-muted">¡Agrega productos o creaciones para comenzar!</p>
-                  <Button variant="primary" onClick={() => navigate('/crear-creacion')} className="mt-3">
+                  <Button
+                    variant="primary"
+                    onClick={() => navigate('/crear-creacion')}
+                    className="mt-3"
+                  >
                     <i className="bi bi-plus-circle me-2"></i>
                     Haz una nueva creación
                   </Button>
                 </Alert>
               ) : (
                 <>
+                  {/* LISTADO DE ITEMS */}
                   <ListGroup variant="flush">
-                    {carrito.items.map((item) => (
-                      <ListGroup.Item key={item.id} className="px-0 py-3">
-                        <Row className="align-items-center">
-                          <Col md={6}>
-                            <div>
-                              <h6 className="mb-1">
-                                {item.producto ? item.producto.nombre : item.creacion.nombre}
-                              </h6>
-                              <Badge bg={item.producto ? 'primary' : 'success'}>
-                                {item.producto ? 'Producto' : 'Creación'}
-                              </Badge>
-                              {item.creacion && (
-                                <small className="d-block text-muted mt-1">
-                                  {item.creacion.productos?.length || 0} productos incluidos
-                                </small>
-                              )}
-                            </div>
-                          </Col>
+                    {carrito.items.map((item) => {
+                      const nombreItem =
+                        item.productoNombre ??
+                        item.creacionNombre ??
+                        'Item sin nombre';
 
-                          <Col md={2} className="text-center">
-                            <small className="text-muted d-block">Precio unitario</small>
-                            <strong>{formatearPrecio(item.precioUnitario)}</strong>
-                          </Col>
+                      const esProducto = !!item.productoId;
+                      const esCreacion = !!item.creacionId;
 
-                          <Col md={2}>
-                            <div className="d-flex justify-content-center align-items-center gap-2">
+                      return (
+                        <ListGroup.Item key={item.id} className="px-0 py-3">
+                          <Row className="align-items-center">
+                            <Col md={6}>
+                              <div>
+                                <h6 className="mb-1">{nombreItem}</h6>
+
+                                {(esProducto || esCreacion) && (
+                                  <Badge bg={esProducto ? 'primary' : 'success'}>
+                                    {esProducto ? 'Producto' : 'Creación'}
+                                  </Badge>
+                                )}
+                              </div>
+                            </Col>
+
+                            <Col md={2} className="text-center">
+                              <small className="text-muted d-block">Precio unitario</small>
+                              <strong>{formatearPrecio(item.precioUnitario)}</strong>
+                            </Col>
+
+                            <Col md={2}>
+                              <div className="d-flex justify-content-center align-items-center gap-2">
+                                <Button
+                                  variant="outline-secondary"
+                                  size="sm"
+                                  onClick={() =>
+                                    actualizarCantidad(item.id, item.cantidad - 1)
+                                  }
+                                  disabled={item.cantidad <= 1}
+                                >
+                                  <i className="bi bi-dash"></i>
+                                </Button>
+                                <span className="mx-2">
+                                  <strong>{item.cantidad}</strong>
+                                </span>
+                                <Button
+                                  variant="outline-secondary"
+                                  size="sm"
+                                  onClick={() =>
+                                    actualizarCantidad(item.id, item.cantidad + 1)
+                                  }
+                                >
+                                  <i className="bi bi-plus"></i>
+                                </Button>
+                              </div>
+                            </Col>
+
+                            <Col md={2} className="text-end">
+                              <div>
+                                <small className="text-muted d-block">Subtotal</small>
+                                <h5 className="text-success mb-0">
+                                  {formatearPrecio(item.subtotal)}
+                                </h5>
+                              </div>
                               <Button
-                                variant="outline-secondary"
+                                variant="link"
                                 size="sm"
-                                onClick={() => actualizarCantidad(item.id, item.cantidad - 1)}
-                                disabled={item.cantidad <= 1}
+                                className="text-danger p-0 mt-1"
+                                onClick={() => eliminarItem(item.id)}
                               >
-                                <i className="bi bi-dash"></i>
+                                <i className="bi bi-trash"></i> Eliminar
                               </Button>
-                              <span className="mx-2"><strong>{item.cantidad}</strong></span>
-                              <Button
-                                variant="outline-secondary"
-                                size="sm"
-                                onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}
-                              >
-                                <i className="bi bi-plus"></i>
-                              </Button>
-                            </div>
-                          </Col>
-
-                          <Col md={2} className="text-end">
-                            <div>
-                              <small className="text-muted d-block">Subtotal</small>
-                              <h5 className="text-success mb-0">
-                                {formatearPrecio(item.subtotal)}
-                              </h5>
-                            </div>
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-danger p-0 mt-1"
-                              onClick={() => eliminarItem(item.id)}
-                            >
-                              <i className="bi bi-trash"></i> Eliminar
-                            </Button>
-                          </Col>
-                        </Row>
-                      </ListGroup.Item>
-                    ))}
+                            </Col>
+                          </Row>
+                        </ListGroup.Item>
+                      );
+                    })}
                   </ListGroup>
 
                   <hr className="my-4" />
@@ -285,7 +323,8 @@ export const Carrito = () => {
                     <Col md={8}>
                       <Alert variant="info">
                         <i className="bi bi-info-circle me-2"></i>
-                        <strong>Nota:</strong> Los precios mostrados son los vigentes al momento de agregar al carrito.
+                        <strong>Nota:</strong> Los precios mostrados son los vigentes al
+                        momento de agregar al carrito.
                       </Alert>
                     </Col>
                     <Col md={4}>
@@ -318,7 +357,12 @@ export const Carrito = () => {
       </Row>
 
       {/* Modal de confirmación de pedido */}
-      <Modal show={showConfirmarPedido} onHide={() => setShowConfirmarPedido(false)} size="lg" centered>
+      <Modal
+        show={showConfirmarPedido}
+        onHide={() => setShowConfirmarPedido(false)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton className="bg-primary text-white">
           <Modal.Title>
             <i className="bi bi-credit-card me-2"></i>
@@ -334,11 +378,13 @@ export const Carrito = () => {
               </Form.Label>
               <Form.Select
                 value={pedidoData.tarjetaId}
-                onChange={(e) => setPedidoData({...pedidoData, tarjetaId: e.target.value})}
+                onChange={(e) =>
+                  setPedidoData({ ...pedidoData, tarjetaId: e.target.value })
+                }
                 required
               >
                 <option value="">Selecciona una tarjeta</option>
-                {tarjetas.map(tarjeta => (
+                {tarjetas.map((tarjeta) => (
                   <option key={tarjeta.id} value={tarjeta.id}>
                     {tarjeta.tipo} **** {tarjeta.ultimos4Digitos} - {tarjeta.titular}
                     {tarjeta.principal && ' (Principal)'}
@@ -354,11 +400,13 @@ export const Carrito = () => {
               </Form.Label>
               <Form.Select
                 value={pedidoData.direccionEntrega}
-                onChange={(e) => setPedidoData({...pedidoData, direccionEntrega: e.target.value})}
+                onChange={(e) =>
+                  setPedidoData({ ...pedidoData, direccionEntrega: e.target.value })
+                }
                 required
               >
                 <option value="">Selecciona una dirección</option>
-                {direcciones.map(dir => (
+                {direcciones.map((dir) => (
                   <option
                     key={dir.id}
                     value={`${dir.calle} ${dir.numero}, ${dir.barrio}`}
@@ -379,7 +427,9 @@ export const Carrito = () => {
                 as="textarea"
                 rows={3}
                 value={pedidoData.observaciones}
-                onChange={(e) => setPedidoData({...pedidoData, observaciones: e.target.value})}
+                onChange={(e) =>
+                  setPedidoData({ ...pedidoData, observaciones: e.target.value })
+                }
                 placeholder="Instrucciones especiales de entrega (opcional)"
                 maxLength={1000}
               />
@@ -389,15 +439,26 @@ export const Carrito = () => {
               <Card.Body>
                 <h6>Resumen del Pedido:</h6>
                 <ul className="mb-0">
-                  <li><strong>Items:</strong> {carrito?.items.length}</li>
-                  <li><strong>Total:</strong> <span className="text-success">{formatearPrecio(carrito?.total || 0)}</span></li>
+                  <li>
+                    <strong>Items:</strong> {carrito?.items.length}
+                  </li>
+                  <li>
+                    <strong>Total:</strong>{' '}
+                    <span className="text-success">
+                      {formatearPrecio(carrito?.total || 0)}
+                    </span>
+                  </li>
                 </ul>
               </Card.Body>
             </Card>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirmarPedido(false)} disabled={loading}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowConfirmarPedido(false)}
+            disabled={loading}
+          >
             Cancelar
           </Button>
           <Button variant="primary" onClick={confirmarPedido} disabled={loading}>

@@ -60,6 +60,20 @@ export const MisCreaciones = () => {
     }
   };
 
+  const toggleFavorita = async (creacion) => {
+    try {
+      const nuevaFavorita = !creacion.favorita;
+      const actualizada = await creacionService.marcarFavorita(creacion.id, nuevaFavorita);
+
+      setCreaciones((prev) =>
+        prev.map((c) => (c.id === creacion.id ? actualizada : c))
+      );
+    } catch (err) {
+      console.error(err);
+      alert('Error al actualizar favorito');
+    }
+  };
+
   if (loading) {
     return (
       <Container className="py-5">
@@ -70,6 +84,99 @@ export const MisCreaciones = () => {
       </Container>
     );
   }
+
+  const favoritas = creaciones.filter(c => c.favorita);
+  const noFavoritas = creaciones.filter(c => !c.favorita);
+
+  const renderCardCreacion = (creacion) => {
+    const catInfo = getCategoriaInfo(creacion.categoriaCreacion);
+
+    return (
+      <Col key={creacion.id} md={6} lg={4} className="mb-4">
+        <Card className="h-100 shadow-sm hover-shadow" style={{ cursor: 'pointer' }}>
+          {creacion.imagenUrl ? (
+            <Card.Img
+              variant="top"
+              src={creacion.imagenUrl}
+              style={{ height: '200px', objectFit: 'cover' }}
+            />
+          ) : (
+            <div
+              className={`bg-${catInfo.color} d-flex align-items-center justify-content-center`}
+              style={{ height: '200px' }}
+            >
+              <i className={`${catInfo.icon} text-white`} style={{ fontSize: '5rem' }}></i>
+            </div>
+          )}
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h5 className="mb-0">{creacion.nombre}</h5>
+                <Badge bg={catInfo.color}>
+                  {catInfo.texto}
+                </Badge>
+              </div>
+              <Button
+                variant={creacion.favorita ? "warning" : "outline-secondary"}
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorita(creacion);
+                }}
+              >
+                <i className={creacion.favorita ? "bi bi-star-fill" : "bi bi-star"}></i>
+              </Button>
+            </div>
+
+            {creacion.descripcion && (
+              <p className="text-muted small mb-2">
+                {creacion.descripcion.length > 100
+                  ? creacion.descripcion.substring(0, 100) + '...'
+                  : creacion.descripcion}
+              </p>
+            )}
+
+            <div className="mb-3">
+              <small className="text-muted">
+                <i className="bi bi-box me-1"></i>
+                {creacion.productos?.length || 0} productos
+              </small>
+            </div>
+
+            <div className="d-flex justify-content-between align-items-center">
+              <h4 className="text-success mb-0">
+                {formatearPrecio(creacion.precioTotal)}
+              </h4>
+              <div className="d-flex gap-2">
+                <Button
+                  variant="success"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    agregarAlCarrito(creacion.id);
+                  }}
+                >
+                  <i className="bi bi-cart-plus me-1"></i>
+                  Agregar al Carrito
+                </Button>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    verDetalle(creacion.id);
+                  }}
+                >
+                  <i className="bi bi-eye me-1"></i>
+                  Ver Detalle
+                </Button>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      </Col>
+    );
+  };
 
   return (
     <Container className="py-5">
@@ -114,78 +221,37 @@ export const MisCreaciones = () => {
                     {creaciones.length !== 1 ? 'es' : ''}
                   </p>
 
-                  <Row>
-                    {creaciones.map(creacion => {
-                      const catInfo = getCategoriaInfo(creacion.categoriaCreacion);
-                      return (
-                        <Col key={creacion.id} md={6} lg={4} className="mb-4">
-                          <Card className="h-100 shadow-sm hover-shadow" style={{ cursor: 'pointer' }}>
-                            {creacion.imagenUrl ? (
-                              <Card.Img
-                                variant="top"
-                                src={creacion.imagenUrl}
-                                style={{ height: '200px', objectFit: 'cover' }}
-                              />
-                            ) : (
-                              <div
-                                className={`bg-${catInfo.color} d-flex align-items-center justify-content-center`}
-                                style={{ height: '200px' }}
-                              >
-                                <i className={`${catInfo.icon} text-white`} style={{ fontSize: '5rem' }}></i>
-                              </div>
-                            )}
-                            <Card.Body>
-                              <div className="d-flex justify-content-between align-items-start mb-2">
-                                <h5 className="mb-0">{creacion.nombre}</h5>
-                                <Badge bg={catInfo.color}>
-                                  {catInfo.texto}
-                                </Badge>
-                              </div>
+                  {/* Sección Favoritas */}
+                  <section className="mb-4">
+                    <h5 className="mb-3">
+                      <i className="bi bi-star-fill text-warning me-2"></i>
+                      Favoritas ({favoritas.length})
+                    </h5>
+                    {favoritas.length === 0 ? (
+                      <p className="text-muted">Todavía no marcaste ninguna creación como favorita.</p>
+                    ) : (
+                      <Row>
+                        {favoritas.map(renderCardCreacion)}
+                      </Row>
+                    )}
+                  </section>
 
-                              {creacion.descripcion && (
-                                <p className="text-muted small mb-2">
-                                  {creacion.descripcion.length > 100
-                                    ? creacion.descripcion.substring(0, 100) + '...'
-                                    : creacion.descripcion}
-                                </p>
-                              )}
+                  <hr />
 
-                              <div className="mb-3">
-                                <small className="text-muted">
-                                  <i className="bi bi-box me-1"></i>
-                                  {creacion.productos?.length || 0} productos
-                                </small>
-                              </div>
-
-                              <div className="d-flex justify-content-between align-items-center">
-                                <h4 className="text-success mb-0">
-                                  {formatearPrecio(creacion.precioTotal)}
-                                </h4>
-                                <div className="d-flex gap-2">
-                                  <Button
-                                    variant="success"
-                                    size="sm"
-                                    onClick={() => agregarAlCarrito(creacion.id)}
-                                  >
-                                    <i className="bi bi-cart-plus me-1"></i>
-                                    Agregar al Carrito
-                                  </Button>
-                                  <Button
-                                    variant="outline-primary"
-                                    size="sm"
-                                    onClick={() => verDetalle(creacion.id)}
-                                  >
-                                    <i className="bi bi-eye me-1"></i>
-                                    Ver Detalle
-                                  </Button>
-                                </div>
-                              </div>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      );
-                    })}
-                  </Row>
+                  {/* Sección No Favoritas */}
+                  <section>
+                    <h5 className="mb-3">
+                      <i className="bi bi-list-ul me-2"></i>
+                      Otras creaciones ({noFavoritas.length})
+                    </h5>
+                    {noFavoritas.length === 0 ? (
+                      <p className="text-muted">Todas tus creaciones están marcadas como favoritas.</p>
+                    ) : (
+                      <Row>
+                        {noFavoritas.map(renderCardCreacion)}
+                      </Row>
+                    )}
+                  </section>
                 </>
               )}
             </Card.Body>

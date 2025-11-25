@@ -36,6 +36,9 @@ public class Creacion {
     @Column(length = 500)
     private String imagenUrl;
 
+    @Column(nullable = false)
+    private boolean favorita = false;
+
     @NotNull(message = "La categoría de la creación es obligatoria")
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria_creacion", nullable = false, length = 20)

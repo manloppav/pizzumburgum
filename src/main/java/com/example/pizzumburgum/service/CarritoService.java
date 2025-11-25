@@ -1,5 +1,7 @@
 package com.example.pizzumburgum.service;
 
+import com.example.pizzumburgum.dto.response.CarritoDTO;
+import com.example.pizzumburgum.dto.response.CarritoItemDTO;
 import com.example.pizzumburgum.entities.*;
 import com.example.pizzumburgum.repository.CarritoRepositorio;
 import com.example.pizzumburgum.repository.CreacionRepositorio;
@@ -12,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -158,5 +162,37 @@ public class CarritoService {
         carrito.setTotal(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         carritoRepositorio.save(carrito);
     }
-}
 
+    public CarritoDTO convertirADTO(Carrito carrito) {
+        CarritoDTO dto = new CarritoDTO();
+        dto.setId(carrito.getId());
+        dto.setTotal(carrito.getTotal());
+
+        List<CarritoItemDTO> itemsDTO = carrito.getItems().stream()
+                .map(this::convertirItemADTO)
+                .collect(Collectors.toList());
+        dto.setItems(itemsDTO);
+
+        return dto;
+    }
+
+    private CarritoItemDTO convertirItemADTO(CarritoItem item) {
+        CarritoItemDTO dto = new CarritoItemDTO();
+        dto.setId(item.getId());
+        dto.setCantidad(item.getCantidad());
+        dto.setPrecioUnitario(item.getPrecioUnitario());
+        dto.setSubtotal(item.getSubtotal());
+
+        if (item.getProducto() != null) {
+            dto.setProductoId(item.getProducto().getId());
+            dto.setProductoNombre(item.getProducto().getNombre());
+        }
+
+        if (item.getCreacion() != null) {
+            dto.setCreacionId(item.getCreacion().getId());
+            dto.setCreacionNombre(item.getCreacion().getNombre());
+        }
+
+        return dto;
+    }
+}
