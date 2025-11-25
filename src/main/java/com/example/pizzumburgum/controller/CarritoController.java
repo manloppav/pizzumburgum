@@ -107,6 +107,13 @@ public class CarritoController {
         }
     }
 
+    @DeleteMapping("/vaciar")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<Void> vaciarCarrito(@RequestParam Long usuarioId) {
+        carritoService.vaciarCarrito(usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
     /**
      * ================== Manejo de errores simples ==================
      */
