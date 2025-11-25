@@ -137,6 +137,20 @@ public class CreacionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public CreacionDTO actualizarFavorita(Long creacionId, Long usuarioId, boolean favorita) {
+        Creacion creacion = creacionRepositorio.findById(creacionId)
+                .orElseThrow(() -> new RegistroException("Creación no encontrada"));
+
+        if (creacion.getUsuario() == null || !creacion.getUsuario().getId().equals(usuarioId)) {
+            throw new IllegalArgumentException("No tiene permisos para modificar esta creación");
+        }
+
+        creacion.setFavorita(favorita);
+        Creacion guardada = creacionRepositorio.save(creacion);
+        return convertirACreacionDTO(guardada);
+    }
+
     private CreacionDTO convertirACreacionDTO(Creacion creacion) {
         CreacionDTO dto = new CreacionDTO();
         dto.setId(creacion.getId());
@@ -145,6 +159,7 @@ public class CreacionService {
         dto.setImagenUrl(creacion.getImagenUrl());
         dto.setCategoriaCreacion(creacion.getCategoriaCreacion());
         dto.setPrecioTotal(creacion.getPrecioTotal());
+        dto.setFavorita(creacion.isFavorita());
 
         if (creacion.getUsuario() != null) {
             dto.setNombreUsuario(creacion.getUsuario().getNombre() + " " + creacion.getUsuario().getApellido());

@@ -19,5 +19,12 @@ export const creacionService = {
   async listarMisCreaciones() {
     const response = await api.get('/creaciones/mis-creaciones');
     return response.data;
-  }
+  },
+
+  async marcarFavorita(id, favorita) {
+      const response = await api.patch(`/creaciones/${id}/favorita`, null, {
+        params: { favorita }
+      });
+      return response.data;
+    }
 };

@@ -121,4 +121,17 @@ public class CreacionController {
         return ResponseEntity.ok(creaciones);
     }
 
+    @PatchMapping("/{id}/favorita")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<CreacionDTO> actualizarFavorita(
+            @PathVariable Long id,
+            @RequestParam boolean favorita
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        CreacionDTO dto = creacionService.actualizarFavorita(id, userDetails.getId(), favorita);
+        return ResponseEntity.ok(dto);
+    }
+
 }

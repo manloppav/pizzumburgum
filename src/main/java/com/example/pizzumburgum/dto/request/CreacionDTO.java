@@ -17,5 +17,6 @@ public class CreacionDTO {
     private BigDecimal precioTotal;
     private List<ProductoSimpleDTO> productos;
     private String nombreUsuario;
+    private Boolean favorita;
 
 }
