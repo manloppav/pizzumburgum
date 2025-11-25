@@ -15,8 +15,19 @@ export const Navbar = () => {
   return (
     <BSNavbar bg="dark" variant="dark" expand="lg" className="mb-4">
       <Container>
-        <BSNavbar.Brand as={Link} to="/">
-          PizzumBurgum
+        <BSNavbar.Brand
+          as={Link}
+          to="/"
+          className="d-flex align-items-center"
+          style={{ fontFamily: "'Chewy', cursive", fontSize: "1.4rem" }}
+        >
+          <img
+            src="/LogoPizzumBurgum.png"
+            alt="Logo"
+            height="48"
+            className="me-2"
+          />
+          <span>Pizzum & Burgum</span>
         </BSNavbar.Brand>
 
         <BSNavbar.Toggle aria-controls="basic-navbar-nav" />
@@ -25,11 +36,6 @@ export const Navbar = () => {
 
             {isAuthenticated ? (
               <>
-                {/* SOLO PARA USUARIOS LOGUEADOS */}
-                <Nav.Link as={Link} to="/dashboard">
-                  Dashboard
-                </Nav.Link>
-
                 {/* SOLO ADMIN */}
                 {user?.rol === 'ADMIN' && (
                   <>
