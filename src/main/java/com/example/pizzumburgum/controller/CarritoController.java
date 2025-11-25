@@ -1,11 +1,13 @@
 package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CarritoOperacionDTO;
+import com.example.pizzumburgum.dto.response.CarritoDTO;
 import com.example.pizzumburgum.entities.Carrito;
 import com.example.pizzumburgum.service.CarritoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +28,19 @@ public class CarritoController {
 
     // Agregar producto suelto al carrito
     @PostMapping("/productos/{productoId}")
-    public ResponseEntity<Carrito> agregarProducto(
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<?> agregarProducto(
             @PathVariable Long productoId,
             @RequestBody @Valid CarritoOperacionDTO dto) {
 
-        Carrito resp = carritoService.agregarProductoSuelto(
-                dto.getUsuarioId(), productoId, dto.getCantidadRequerida());
-        return ResponseEntity.ok(resp);
+        try {
+            Carrito carrito = carritoService.agregarProductoSuelto(
+                    dto.getUsuarioId(), productoId, dto.getCantidadRequerida());
+            CarritoDTO carritoDTO = carritoService.convertirADTO(carrito);
+            return ResponseEntity.ok(carritoDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     /**
@@ -41,13 +49,19 @@ public class CarritoController {
 
     // Agregar creación al carrito
     @PostMapping("/creaciones/{creacionId}")
-    public ResponseEntity<Carrito> agregarCreacion(
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<?> agregarCreacion(
             @PathVariable Long creacionId,
             @RequestBody @Valid CarritoOperacionDTO dto) {
 
-        Carrito resp = carritoService.agregarCreacion(
-                dto.getUsuarioId(), creacionId, dto.getCantidadRequerida());
-        return ResponseEntity.ok(resp);
+        try {
+            Carrito carrito = carritoService.agregarCreacion(
+                    dto.getUsuarioId(), creacionId, dto.getCantidadRequerida());
+            CarritoDTO carritoDTO = carritoService.convertirADTO(carrito);
+            return ResponseEntity.ok(carritoDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     /**
@@ -56,34 +70,41 @@ public class CarritoController {
 
     // Actualizar cantidad de un item del carrito (por id del item)
     @PutMapping("/items/{carritoItemId}")
-    public ResponseEntity<Carrito> actualizarCantidadItem(
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<?> actualizarCantidadItem(
             @PathVariable Long carritoItemId,
             @RequestBody @Valid CarritoOperacionDTO dto) {
-
-        // En el service actualizarCantidad espera (usuarioId, carritoItemId, nuevaCantidad)
-        Carrito resp = carritoService.actualizarCantidad(
-                dto.getUsuarioId(), carritoItemId, dto.getNuevaCantidad());
-        return ResponseEntity.ok(resp);
+        try {
+            Carrito carrito = carritoService.actualizarCantidad(
+                    dto.getUsuarioId(), carritoItemId, dto.getNuevaCantidadRequerida());
+            return ResponseEntity.ok(carritoService.convertirADTO(carrito));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<Carrito> obtenerCarrito(@RequestParam Long usuarioId) {
-        Carrito carrito = carritoService.obtenerOCrearCarrito(usuarioId);
-        return ResponseEntity.ok(carrito);
+    public ResponseEntity<CarritoDTO> obtenerCarrito(@RequestParam Long usuarioId) {
+        try {
+            Carrito carrito = carritoService.obtenerOCrearCarrito(usuarioId);
+            CarritoDTO dto = carritoService.convertirADTO(carrito);
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @DeleteMapping("/items/{carritoItemId}")
-    public ResponseEntity<Carrito> eliminarItem(
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    public ResponseEntity<?> eliminarItem(
             @PathVariable Long carritoItemId,
             @RequestParam Long usuarioId) {
-        Carrito resp = carritoService.eliminarItem(usuarioId, carritoItemId);
-        return ResponseEntity.ok(resp);
-    }
-
-    @DeleteMapping("/vaciar")
-    public ResponseEntity<Void> vaciarCarrito(@RequestParam Long usuarioId) {
-        carritoService.vaciarCarrito(usuarioId);
-        return ResponseEntity.noContent().build();
+        try {
+            Carrito carrito = carritoService.eliminarItem(usuarioId, carritoItemId);
+            return ResponseEntity.ok(carritoService.convertirADTO(carrito));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     /**
