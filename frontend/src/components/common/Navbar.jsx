@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar as BSNavbar, Container, Nav, Button } from 'react-bootstrap';
+import { Navbar as BSNavbar, Container, Nav, Button, NavDropdown } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 
 export const Navbar = () => {
@@ -63,24 +63,49 @@ export const Navbar = () => {
                       <i className="bi bi-star me-1"></i>
                       Mis Creaciones
                     </Nav.Link>
+                    <NavDropdown
+                      title={
+                        <>
+                          <i className="bi bi-person-circle me-1"></i>
+                          Mi Cuenta
+                        </>
+                      }
+                      id="cuenta-dropdown"
+                    >
+                      <NavDropdown.Item as={Link} to="/mis-direcciones">
+                        <i className="bi bi-geo-alt-fill me-2"></i>
+                        Mis Direcciones
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} to="/mis-tarjetas">
+                        <i className="bi bi-credit-card-fill me-2"></i>
+                        Mis Tarjetas
+                      </NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item onClick={handleLogout}>
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Cerrar Sesión
+                      </NavDropdown.Item>
+                    </NavDropdown>
                   </>
                 )}
 
                 {/* PARA TODOS LOS USUARIOS AUTENTICADOS */}
 
-                {/* NOMBRE + CERRAR SESIÓN */}
-                <Nav.Item className="d-flex align-items-center ms-3">
-                  <span className="text-light me-3">
-                    Hola, {user?.nombre}
-                  </span>
-                  <Button
-                    variant="outline-light"
-                    size="sm"
-                    onClick={handleLogout}
-                  >
-                    Cerrar Sesión
-                  </Button>
-                </Nav.Item>
+                {/* NOMBRE + CERRAR SESIÓN SOLO PARA ADMIN */}
+                {user?.rol === 'ADMIN' && (
+                  <Nav.Item className="d-flex align-items-center ms-3">
+                    <span className="text-light me-3">
+                      Hola, {user?.nombre}
+                    </span>
+                    <Button
+                      variant="outline-light"
+                      size="sm"
+                      onClick={handleLogout}
+                    >
+                      Cerrar Sesión
+                    </Button>
+                  </Nav.Item>
+                )}
 
               </>
             ) : (

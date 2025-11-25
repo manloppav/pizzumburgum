@@ -12,6 +12,9 @@ import { MisPedidos } from './components/cliente/MisPedidos';
 import { GestionProductos } from './components/admin/GestionProductos';
 import { CrearCreacion } from './components/cliente/CrearCreacion';
 import { MisCreaciones } from './components/cliente/MisCreaciones';
+import { MisDirecciones } from './components/cliente/MisDirecciones';
+import { MisTarjetas } from './components/cliente/MisTarjetas';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Dashboard() {
@@ -88,6 +91,22 @@ function App() {
             element={
               <PrivateRoute>
                 <MisCreaciones />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mis-direcciones"
+            element={
+              <PrivateRoute>
+                <MisDirecciones />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mis-tarjetas"
+            element={
+              <PrivateRoute>
+                <MisTarjetas />
               </PrivateRoute>
             }
           />

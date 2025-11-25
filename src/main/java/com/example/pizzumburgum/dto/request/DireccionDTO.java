@@ -21,6 +21,6 @@ public class DireccionDTO {
     @Size(max = 100)
     private String barrio;
 
-    private boolean principal = true;
+    private boolean principal = false;
 
 }
