@@ -42,5 +42,10 @@ export const pedidoService = {
   async obtenerPorId(id) {
     const response = await api.get(`/pedidos/${id}`);
     return response.data;
+  },
+
+  async crearPedido(pedidoData) {
+    const response = await api.post('/pedidos/crear', pedidoData);
+    return response.data;
   }
 };

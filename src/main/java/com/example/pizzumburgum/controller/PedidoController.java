@@ -1,13 +1,16 @@
 package com.example.pizzumburgum.controller;
 
+import com.example.pizzumburgum.dto.request.CrearPedidoDTO;
 import com.example.pizzumburgum.dto.request.PedidoCrearRequestDTO;
 import com.example.pizzumburgum.dto.request.PedidoDTO;
+import com.example.pizzumburgum.entities.Pedido;
 import com.example.pizzumburgum.enums.EstadoPedido;
 import com.example.pizzumburgum.security.CustomUserDetails;
 import com.example.pizzumburgum.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -101,24 +104,20 @@ public class PedidoController {
         return ResponseEntity.ok(pedido);
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
-    public ResponseEntity<PedidoDTO> crearPedido(@RequestBody @Valid PedidoCrearRequestDTO body) {
+    public ResponseEntity<Pedido> crearPedido(@RequestBody @Valid CrearPedidoDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long usuarioId = userDetails.getId();
 
-        var pedido = pedidoService.crearPedido(
-                usuarioId,
-                body.getTarjetaId(),
-                body.getNota(),
-                body.getDireccionEntrega()
+        Pedido pedido = pedidoService.crearPedido(
+                userDetails.getId(),
+                dto.getTarjetaId(),
+                dto.getObservaciones(),
+                dto.getDireccionEntrega()
         );
 
-        PedidoDTO dto = pedidoService.convertirAPedidoDTO(pedido);
-
-        return ResponseEntity.status(201).body(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
-
 
 }

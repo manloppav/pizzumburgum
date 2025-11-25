@@ -63,6 +63,10 @@ export const Navbar = () => {
                       <i className="bi bi-star me-1"></i>
                       Mis Creaciones
                     </Nav.Link>
+                    <Nav.Link as={Link} to="/carrito">
+                      <i className="bi bi-cart3 me-1"></i>
+                      Carrito
+                    </Nav.Link>
                     <NavDropdown
                       title={
                         <>

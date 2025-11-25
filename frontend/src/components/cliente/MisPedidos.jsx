@@ -127,7 +127,6 @@ export const MisPedidos = () => {
                     <Table striped bordered hover responsive>
                       <thead className="table-dark">
                         <tr>
-                          <th style={{ width: '80px' }}>ID</th>
                           <th>Fecha</th>
                           <th>Dirección</th>
                           <th style={{ width: '120px' }}>Total</th>
@@ -140,9 +139,6 @@ export const MisPedidos = () => {
                           const estadoBadge = getEstadoBadge(pedido.estado);
                           return (
                             <tr key={pedido.id}>
-                              <td className="text-center">
-                                <strong>#{pedido.id}</strong>
-                              </td>
                               <td>
                                 <i className="bi bi-calendar3 me-2 text-muted"></i>
                                 {formatearFecha(pedido.fechaHora)}

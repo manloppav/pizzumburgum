@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Badge, Alert, Spinner, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { creacionService } from '../../services/creacionService';
+import { carritoService } from '../../services/carritoService';
 import { ModalDetalleCreacion } from '../common/ModalDetalleCreacion';
+import { useAuth } from "../../context/AuthContext";
 
 export const MisCreaciones = () => {
+  const { user } = useAuth();
   const [creaciones, setCreaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -45,6 +48,16 @@ export const MisCreaciones = () => {
       return { texto: 'Pizza', color: 'danger', icon: 'bi-circle-fill' };
     }
     return { texto: 'Hamburguesa', color: 'warning', icon: 'bi-circle-fill' };
+  };
+
+  const agregarAlCarrito = async (creacionId) => {
+    try {
+      await carritoService.agregarCreacion(creacionId, user.id, 1);
+      alert('¡Creación agregada al carrito!');
+    } catch (err) {
+      console.error(err);
+      alert('Error al agregar al carrito');
+    }
   };
 
   if (loading) {
@@ -97,7 +110,8 @@ export const MisCreaciones = () => {
               ) : (
                 <>
                   <p className="text-muted mb-4">
-                    Tienes <strong>{creaciones.length}</strong> creacion{creaciones.length !== 1 ? 'es' : ''}
+                    Tienes <strong>{creaciones.length}</strong> creacion
+                    {creaciones.length !== 1 ? 'es' : ''}
                   </p>
 
                   <Row>
@@ -147,14 +161,24 @@ export const MisCreaciones = () => {
                                 <h4 className="text-success mb-0">
                                   {formatearPrecio(creacion.precioTotal)}
                                 </h4>
-                                <Button
-                                  variant="outline-primary"
-                                  size="sm"
-                                  onClick={() => verDetalle(creacion.id)}
-                                >
-                                  <i className="bi bi-eye me-1"></i>
-                                  Ver Detalle
-                                </Button>
+                                <div className="d-flex gap-2">
+                                  <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() => agregarAlCarrito(creacion.id)}
+                                  >
+                                    <i className="bi bi-cart-plus me-1"></i>
+                                    Agregar al Carrito
+                                  </Button>
+                                  <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => verDetalle(creacion.id)}
+                                  >
+                                    <i className="bi bi-eye me-1"></i>
+                                    Ver Detalle
+                                  </Button>
+                                </div>
                               </div>
                             </Card.Body>
                           </Card>
