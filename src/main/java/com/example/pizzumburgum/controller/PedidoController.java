@@ -1,7 +1,6 @@
 package com.example.pizzumburgum.controller;
 
 import com.example.pizzumburgum.dto.request.CrearPedidoDTO;
-import com.example.pizzumburgum.dto.request.PedidoCrearRequestDTO;
 import com.example.pizzumburgum.dto.request.PedidoDTO;
 import com.example.pizzumburgum.entities.Pedido;
 import com.example.pizzumburgum.enums.EstadoPedido;
