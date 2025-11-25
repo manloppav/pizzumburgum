@@ -66,6 +66,26 @@ public class CarritoController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping
+    public ResponseEntity<Carrito> obtenerCarrito(@RequestParam Long usuarioId) {
+        Carrito carrito = carritoService.obtenerOCrearCarrito(usuarioId);
+        return ResponseEntity.ok(carrito);
+    }
+
+    @DeleteMapping("/items/{carritoItemId}")
+    public ResponseEntity<Carrito> eliminarItem(
+            @PathVariable Long carritoItemId,
+            @RequestParam Long usuarioId) {
+        Carrito resp = carritoService.eliminarItem(usuarioId, carritoItemId);
+        return ResponseEntity.ok(resp);
+    }
+
+    @DeleteMapping("/vaciar")
+    public ResponseEntity<Void> vaciarCarrito(@RequestParam Long usuarioId) {
+        carritoService.vaciarCarrito(usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
     /**
      * ================== Manejo de errores simples ==================
      */

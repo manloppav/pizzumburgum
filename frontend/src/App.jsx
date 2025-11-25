@@ -14,6 +14,7 @@ import { CrearCreacion } from './components/cliente/CrearCreacion';
 import { MisCreaciones } from './components/cliente/MisCreaciones';
 import { MisDirecciones } from './components/cliente/MisDirecciones';
 import { MisTarjetas } from './components/cliente/MisTarjetas';
+import { Carrito } from './components/cliente/Carrito';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -107,6 +108,14 @@ function App() {
             element={
               <PrivateRoute>
                 <MisTarjetas />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/carrito"
+            element={
+              <PrivateRoute>
+                <Carrito />
               </PrivateRoute>
             }
           />

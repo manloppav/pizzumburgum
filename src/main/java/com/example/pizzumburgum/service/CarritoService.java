@@ -5,9 +5,9 @@ import com.example.pizzumburgum.repository.CarritoRepositorio;
 import com.example.pizzumburgum.repository.CreacionRepositorio;
 import com.example.pizzumburgum.repository.ProductoRepositorio;
 import com.example.pizzumburgum.repository.UsuarioRepositorio;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,9 +22,11 @@ public class CarritoService {
     private final ProductoRepositorio productoRepositorio;
     private final CreacionRepositorio creacionRepositorio;
 
-    /** ############ Helpers ############ */
+    /**
+     * ############ Helpers ############
+     */
 
-    private Carrito obtenerOCrearCarrito(Long usuarioId) {
+    public Carrito obtenerOCrearCarrito(Long usuarioId) {
         var usuario = usuarioRepositorio.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + usuarioId));
 
@@ -46,7 +48,9 @@ public class CarritoService {
         carrito.setTotal(total);
     }
 
-    /** ############ Precios vigentes (snapshot en el momento) ############ */
+    /**
+     * ############ Precios vigentes (snapshot en el momento) ############
+     */
 
     private BigDecimal precioVigenteProducto(Long productoId) {
         var prod = productoRepositorio.findById(productoId)
@@ -62,7 +66,9 @@ public class CarritoService {
         return creacion.getPrecioTotal().setScale(2, RoundingMode.HALF_UP);
     }
 
-    /** ############ Operaciones públicas ############ */
+    /**
+     * ############ Operaciones públicas ############
+     */
 
     @Transactional
     public Carrito agregarProductoSuelto(Long usuarioId, Long productoId, int cantidad) {
@@ -125,6 +131,32 @@ public class CarritoService {
 
         recalcularTotalCarrito(carrito);
         return carritoRepositorio.save(carrito);
+    }
+
+    @Transactional(readOnly = true)
+    public Carrito obtenerCarritoConDetalles(Long usuarioId) {
+        return obtenerOCrearCarrito(usuarioId);
+    }
+
+    @Transactional
+    public Carrito eliminarItem(Long usuarioId, Long carritoItemId) {
+        Carrito carrito = carritoRepositorio.findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario no tiene carrito activo"));
+
+        carrito.getItems().removeIf(item -> item.getId().equals(carritoItemId));
+        recalcularTotalCarrito(carrito);
+
+        return carritoRepositorio.save(carrito);
+    }
+
+    @Transactional
+    public void vaciarCarrito(Long usuarioId) {
+        Carrito carrito = carritoRepositorio.findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario no tiene carrito activo"));
+
+        carrito.getItems().clear();
+        carrito.setTotal(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        carritoRepositorio.save(carrito);
     }
 }
 
