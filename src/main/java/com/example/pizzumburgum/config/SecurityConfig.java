@@ -1,5 +1,6 @@
 package com.example.pizzumburgum.config;
 
+import com.example.pizzumburgum.security.ApiKeyAuthFilter;
 import com.example.pizzumburgum.security.CustomUserDetailsService;
 import com.example.pizzumburgum.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final ApiKeyAuthFilter apiKeyAuthFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     @Bean
@@ -49,12 +51,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/creaciones/**").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/pedidos/mis-pedidos", "/api/pedidos/{id}").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers("/api/creaciones/{id}").hasAnyRole("CLIENTE", "ADMIN")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/external/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

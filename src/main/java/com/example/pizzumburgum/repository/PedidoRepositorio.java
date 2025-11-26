@@ -39,22 +39,25 @@ public interface PedidoRepositorio extends JpaRepository<Pedido, Long> {
     ///  Nuevas consultas para DGI  ///
     // IDs de pedidos con pago en un rango de fecha/hora (día completo)
     @Query("""
-           select p.id
-           from Pedido p
-           where p.fechaHora >= :start and p.fechaHora < :end
-             and p.pago is not null
-           """)
+            select p.id
+            from Pedido p
+            where p.fechaHora >= :start and p.fechaHora < :end
+              and p.pago is not null
+            """)
     List<Long> findIdsWithPagoByDateRange(@Param("start") LocalDateTime start,
                                           @Param("end") LocalDateTime end);
 
     // Carga el pedido con sus items y pago en una sola pasada
     @Query("""
-           select distinct p
-           from Pedido p
-           left join fetch p.items i
-           left join fetch p.pago pg
-           where p.id in :ids
-           """)
+            SELECT DISTINCT p
+            FROM Pedido p
+            LEFT JOIN FETCH p.items i
+            LEFT JOIN FETCH i.producto
+            LEFT JOIN FETCH i.creacion
+            LEFT JOIN FETCH p.pago
+            LEFT JOIN FETCH p.usuario
+            WHERE p.id IN :ids
+            """)
     List<Pedido> findAllWithItemsAndPagoByIds(@Param("ids") List<Long> ids);
 
 }
